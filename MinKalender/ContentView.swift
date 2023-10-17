@@ -1,88 +1,154 @@
-//
-//  ContentView.swift
-//  MinKalender
-//
-//  Created by Lottis on 2023-10-14.
-//
-
 import SwiftUI
-import CoreData
+import EventKit
+import Foundation
 
-struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
+struct WeekdayHeaderView: View {
+    let weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"]
 
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
+    @Binding var isMenuOpen: Bool
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
-                }
-                .onDelete(perform: deleteItems)
+        HStack {
+            Button(action: {
+                isMenuOpen.toggle()
+            }) {
+                Image(systemName: "line.horizontal.3") // Symbolen för en menyknapp
+                    .font(.headline)
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 10)
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
+            
+            ForEach(weekdays, id: \.self) { weekday in
+                Text(weekday)
+                    .font(.headline)
+                    .textCase(.uppercase)
+                    .padding(.horizontal, 5)
+                    .frame(maxWidth: .infinity)
+                    .offset(x: -25)
             }
-            Text("Select an item")
+        }
+        .background(Color.clear)
+        .foregroundColor(.gray)
+    }
+}
+
+class CalendarData: ObservableObject {
+    @Published var selectedCalendars: Set<String> {
+        didSet {
+            saveSelectedCalendars()
+            print("Selected calendars saved: \(selectedCalendars)")
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+    init() {
+        print("Initializing CalendarData")
+        if let savedCalendars = UserDefaults.standard.stringArray(forKey: "selectedCalendars") {
+            self.selectedCalendars = Set(savedCalendars)
+        } else {
+            self.selectedCalendars = Set(["Hem"])
+        }
+        print(selectedCalendars)
+    }
 
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+    private func saveSelectedCalendars() {
+        let calendarArray = Array(selectedCalendars)
+        UserDefaults.standard.set(calendarArray, forKey: "selectedCalendars")
+    }
+}
+
+struct CalendarMenuView: View {
+    @Binding var eventsForDay: [EventInfo]
+    @Binding var isOpen: Bool
+    @Binding var selectedCalendars: Set<String>
+    @StateObject private var calendarData = CalendarData()
+
+    var body: some View {
+        VStack {
+            Button(action: {
+                isOpen.toggle()
+            }) {
+                Text("Stäng meny")
+            }
+            List(Array(Set(eventsForDay.map { $0.calendarName }).sorted()), id: \.self) { calendarName in
+                       Toggle(isOn: Binding(
+                        get: { self.calendarData.selectedCalendars.contains(calendarName) },
+                                set: { newValue in
+                                    if newValue {
+                                        self.calendarData.selectedCalendars.insert(calendarName)
+                                    } else {
+                                        self.calendarData.selectedCalendars.remove(calendarName)
+                               }
+                           }
+                       )) {
+                           Text(calendarName)
+                       }
+            }
+
+        }
+        .padding()
+        .frame(width: (UIScreen.main.bounds.size.width / 4), height: (UIScreen.main.bounds.size.height), alignment: .topLeading)
+        .background(Color(UIColor.systemBackground))
+        .shadow(color: Color(UIColor.systemGray).opacity(0.3), radius: 5, x: 2, y: 2)
+        .position(x: (UIScreen.main.bounds.size.width / 8), y: UIScreen.main.bounds.size.height / 2)
+        }
+    }
+
+struct ContentView: View {
+    @State private var isCalendarAuthorized: Bool?
+    @State private var showCalendarAccessAlert = false
+    @AppStorage("hasRequestedCalendarAccess") private var hasRequestedCalendarAccess = false
+    @State private var today = Date()
+    @State private var isMenuOpen = false
+    @Binding var eventsForDay: [EventInfo]
+    @Binding var selectedCalendars: Set<String>
+    
+    var body: some View {
+        ZStack {
+            VStack(spacing: 0) {
+                WeekdayHeaderView(isMenuOpen: $isMenuOpen)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(height: 40)
+                    
+                if let isCalendarAuthorized = isCalendarAuthorized {
+                    if isCalendarAuthorized {
+                        MinKalenderApp(eventsForDay: eventsForDay).weekCalendarView(forDate: today, selectedCalendars: $selectedCalendars)
+                    } else {
+                        Text("Tillåt kalendertillgång")
+                            .onAppear {
+                                if !hasRequestedCalendarAccess {
+                                    requestCalendarAccess()
+                                }
+                            }
+                    }
+                } else {
+                    ProgressView("Laddar...").onAppear(perform: checkCalendarAuthorization)
+                }
+               
+            }
+            
+            if isMenuOpen {
+                CalendarMenuView(eventsForDay: $eventsForDay, isOpen: $isMenuOpen, selectedCalendars: $selectedCalendars)
             }
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
+    private func checkCalendarAuthorization() {
+        let status = EKEventStore.authorizationStatus(for: .event)
+        isCalendarAuthorized = status == .authorized
+    }
 
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+    private func requestCalendarAccess() {
+        let eventStore = EKEventStore()
+        eventStore.requestAccess(to: .event) { granted, error in
+            DispatchQueue.main.async {
+                hasRequestedCalendarAccess = true
+                if granted {
+                    isCalendarAuthorized = true
+                } else {
+                    showCalendarAccessAlert = true
+                }
             }
         }
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-    }
-}

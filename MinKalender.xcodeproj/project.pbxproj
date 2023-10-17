@@ -13,9 +13,11 @@
 		AB6C9BDB2ADAC2AE00195FFB /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB6C9BDA2ADAC2AE00195FFB /* Preview Assets.xcassets */; };
 		AB6C9BDD2ADAC2AE00195FFB /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BDC2ADAC2AE00195FFB /* Persistence.swift */; };
 		AB6C9BE02ADAC2AE00195FFB /* MinKalender.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BDE2ADAC2AE00195FFB /* MinKalender.xcdatamodeld */; };
+		AB6C9BE72ADAC46000195FFB /* MinaEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BE62ADAC46000195FFB /* MinaEvent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB5D12B62ADC4D1F00987076 /* MinKalender.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MinKalender.entitlements; sourceTree = "<group>"; };
 		AB6C9BD02ADAC2AB00195FFB /* MinKalender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MinKalender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB6C9BD32ADAC2AB00195FFB /* MinKalenderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinKalenderApp.swift; sourceTree = "<group>"; };
 		AB6C9BD52ADAC2AB00195FFB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -23,6 +25,7 @@
 		AB6C9BDA2ADAC2AE00195FFB /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AB6C9BDC2ADAC2AE00195FFB /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		AB6C9BDF2ADAC2AE00195FFB /* MinKalender.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MinKalender.xcdatamodel; sourceTree = "<group>"; };
+		AB6C9BE62ADAC46000195FFB /* MinaEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinaEvent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +58,8 @@
 		AB6C9BD22ADAC2AB00195FFB /* MinKalender */ = {
 			isa = PBXGroup;
 			children = (
+				AB5D12B62ADC4D1F00987076 /* MinKalender.entitlements */,
+				AB6C9BE62ADAC46000195FFB /* MinaEvent.swift */,
 				AB6C9BD32ADAC2AB00195FFB /* MinKalenderApp.swift */,
 				AB6C9BD52ADAC2AB00195FFB /* ContentView.swift */,
 				AB6C9BD72ADAC2AE00195FFB /* Assets.xcassets */,
@@ -145,6 +150,7 @@
 			files = (
 				AB6C9BDD2ADAC2AE00195FFB /* Persistence.swift in Sources */,
 				AB6C9BD62ADAC2AB00195FFB /* ContentView.swift in Sources */,
+				AB6C9BE72ADAC46000195FFB /* MinaEvent.swift in Sources */,
 				AB6C9BE02ADAC2AE00195FFB /* MinKalender.xcdatamodeld in Sources */,
 				AB6C9BD42ADAC2AB00195FFB /* MinKalenderApp.swift in Sources */,
 			);
@@ -274,15 +280,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MinKalender/MinKalender.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MinKalender/Preview Content\"";
 				DEVELOPMENT_TEAM = 4AKR93CK7Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Need access to show calender events";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -303,15 +312,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MinKalender/MinKalender.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MinKalender/Preview Content\"";
 				DEVELOPMENT_TEAM = 4AKR93CK7Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "Need access to show calender events";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

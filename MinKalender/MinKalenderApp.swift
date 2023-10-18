@@ -4,11 +4,11 @@ import EventKit
 @main
 struct MinKalenderApp: App {
     @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate()
-    @State var selectedCalendars: Set<String> = []
-    
+    @StateObject var calendarData = CalendarData() // Initialize CalendarData
+
     var body: some Scene {
         WindowGroup {
-            ContentView(eventsForDay: $eventsForDay, selectedCalendars: $selectedCalendars)
+            ContentView(eventsForDay: $eventsForDay, selectedCalendars: $calendarData.selectedCalendars)
                 .environment(\.font, Font.custom("Verdana", size: 10))
         }
     }
@@ -26,8 +26,7 @@ struct MinKalenderApp: App {
         return date > thisday
     }
     
-    func weekCalendarView(forDate today: Date, selectedCalendars: Binding<Set<String>>) -> some View {
-        
+    func weekCalendarView(forDate today: Date, calendarData: CalendarData) -> some View {
         let startDate = findStartOfWeek(forDate: today)
         let calendar = Calendar.current
         
@@ -36,9 +35,7 @@ struct MinKalenderApp: App {
         let daySize = (UIScreen.main.bounds.size.height / 4.0) - 20
         let innerDayHeight = (daySize / 2)
         
-        let myCalendar = selectedCalendars.wrappedValue
-        print("Selected Calendars: \(myCalendar)")
-
+        let myCalendar = calendarData.selectedCalendars
         
         for i in 0..<4 {
             var row: [AnyView] = []
@@ -55,10 +52,6 @@ struct MinKalenderApp: App {
                                 return eventStartDate == thatday
                             }
                 
-                let mySelectedCalendar = selectedCalendars.wrappedValue
-                let myCalendar = mySelectedCalendar.joined(separator: ", ")
-                //print("\(selectedCalendars)")
-                
                 row.append(AnyView(
                     VStack(alignment: .leading, spacing: 0) {
                     Text("\(dayNumber)")
@@ -74,9 +67,9 @@ struct MinKalenderApp: App {
                                 ForEach(eventsForCurrentDay, id: \.event.eventIdentifier) { eventInfo in
                                 let calendarName = eventInfo.event.calendar.title
                                 
-                                   // if !myCalendar.contains(calendarName) {
+                                    if myCalendar.contains(calendarName) {
                                     Text(eventInfo.event.title)
-                                    //.textCase(.uppercase)
+                                    .textCase(.uppercase)
                                     .foregroundColor(isPast ? Color.secondary.opacity(0.5) : isFuture ? Color.primary.opacity(0.7) : Color.primary.opacity(1))
                                     .background(.clear)
                                     .padding(EdgeInsets(top: 0, leading: 6, bottom: 2, trailing: 4))
@@ -84,7 +77,7 @@ struct MinKalenderApp: App {
                                     .frame(minHeight: 0)
                                     .background(Color.clear)
                                     .listRowSeparator(.hidden)
-                                  //  }
+                                    }
                                 }
                             }
                         }
@@ -128,4 +121,3 @@ struct MinKalenderApp: App {
         }
     
     }
-

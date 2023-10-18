@@ -12,7 +12,7 @@ struct WeekdayHeaderView: View {
             Button(action: {
                 isMenuOpen.toggle()
             }) {
-                Image(systemName: "line.horizontal.3") // Symbolen för en menyknapp
+                Image(systemName: "line.horizontal.3")
                     .font(.headline)
                     .foregroundColor(.blue)
                     .padding(.horizontal, 10)
@@ -36,7 +36,6 @@ class CalendarData: ObservableObject {
     @Published var selectedCalendars: Set<String> {
         didSet {
             saveSelectedCalendars()
-            print("Selected calendars saved: \(selectedCalendars)")
         }
     }
 
@@ -47,7 +46,6 @@ class CalendarData: ObservableObject {
         } else {
             self.selectedCalendars = Set(["Hem"])
         }
-        print(selectedCalendars)
     }
 
     private func saveSelectedCalendars() {
@@ -60,8 +58,9 @@ struct CalendarMenuView: View {
     @Binding var eventsForDay: [EventInfo]
     @Binding var isOpen: Bool
     @Binding var selectedCalendars: Set<String>
-    @StateObject private var calendarData = CalendarData()
+    @ObservedObject var calendarData: CalendarData
 
+    
     var body: some View {
         VStack {
             Button(action: {
@@ -101,6 +100,7 @@ struct ContentView: View {
     @State private var isMenuOpen = false
     @Binding var eventsForDay: [EventInfo]
     @Binding var selectedCalendars: Set<String>
+    @StateObject var calendarData = CalendarData()
     
     var body: some View {
         ZStack {
@@ -111,7 +111,7 @@ struct ContentView: View {
                     
                 if let isCalendarAuthorized = isCalendarAuthorized {
                     if isCalendarAuthorized {
-                        MinKalenderApp(eventsForDay: eventsForDay).weekCalendarView(forDate: today, selectedCalendars: $selectedCalendars)
+                        MinKalenderApp().weekCalendarView(forDate: today, calendarData: calendarData)
                     } else {
                         Text("Tillåt kalendertillgång")
                             .onAppear {
@@ -127,7 +127,7 @@ struct ContentView: View {
             }
             
             if isMenuOpen {
-                CalendarMenuView(eventsForDay: $eventsForDay, isOpen: $isMenuOpen, selectedCalendars: $selectedCalendars)
+                CalendarMenuView(eventsForDay: $eventsForDay, isOpen: $isMenuOpen, selectedCalendars: $calendarData.selectedCalendars, calendarData: calendarData)
             }
         }
     }
@@ -151,4 +151,3 @@ struct ContentView: View {
         }
     }
 }
-

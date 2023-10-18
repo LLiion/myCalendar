@@ -108,7 +108,6 @@ struct ContentView: View {
                 WeekdayHeaderView(isMenuOpen: $isMenuOpen)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(height: 40)
-                    
                 if let isCalendarAuthorized = isCalendarAuthorized {
                     if isCalendarAuthorized {
                         MinKalenderApp().weekCalendarView(forDate: today, calendarData: calendarData)
@@ -123,13 +122,12 @@ struct ContentView: View {
                 } else {
                     ProgressView("Laddar...").onAppear(perform: checkCalendarAuthorization)
                 }
-               
             }
-            
             if isMenuOpen {
                 CalendarMenuView(eventsForDay: $eventsForDay, isOpen: $isMenuOpen, selectedCalendars: $calendarData.selectedCalendars, calendarData: calendarData)
             }
         }
+        .background(Color(UIColor.systemGray4).opacity(0.8))
     }
 
     private func checkCalendarAuthorization() {

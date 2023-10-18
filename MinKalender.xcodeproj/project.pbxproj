@@ -14,6 +14,7 @@
 		AB6C9BDD2ADAC2AE00195FFB /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BDC2ADAC2AE00195FFB /* Persistence.swift */; };
 		AB6C9BE02ADAC2AE00195FFB /* MinKalender.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BDE2ADAC2AE00195FFB /* MinKalender.xcdatamodeld */; };
 		AB6C9BE72ADAC46000195FFB /* MinaEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BE62ADAC46000195FFB /* MinaEvent.swift */; };
+		AB7AA3E62AE0693500EA23F6 /* DayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7AA3E52AE0693500EA23F6 /* DayView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		AB6C9BDC2ADAC2AE00195FFB /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		AB6C9BDF2ADAC2AE00195FFB /* MinKalender.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MinKalender.xcdatamodel; sourceTree = "<group>"; };
 		AB6C9BE62ADAC46000195FFB /* MinaEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinaEvent.swift; sourceTree = "<group>"; };
+		AB7AA3E52AE0693500EA23F6 /* DayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				AB5D12B62ADC4D1F00987076 /* MinKalender.entitlements */,
+				AB7AA3E52AE0693500EA23F6 /* DayView.swift */,
 				AB6C9BE62ADAC46000195FFB /* MinaEvent.swift */,
 				AB6C9BD32ADAC2AB00195FFB /* MinKalenderApp.swift */,
 				AB6C9BD52ADAC2AB00195FFB /* ContentView.swift */,
@@ -149,6 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB6C9BDD2ADAC2AE00195FFB /* Persistence.swift in Sources */,
+				AB7AA3E62AE0693500EA23F6 /* DayView.swift in Sources */,
 				AB6C9BD62ADAC2AB00195FFB /* ContentView.swift in Sources */,
 				AB6C9BE72ADAC46000195FFB /* MinaEvent.swift in Sources */,
 				AB6C9BE02ADAC2AE00195FFB /* MinKalender.xcdatamodeld in Sources */,

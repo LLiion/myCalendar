@@ -10,12 +10,10 @@ class MinaEvent {
         let eventStore = EKEventStore()
         let calendar = Calendar.autoupdatingCurrent
 
-        // Hitta senast passerade måndag
         var dateComponents = DateComponents()
         dateComponents.weekday = 2  // Måndag
         let today = calendar.startOfDay(for: Date())
         
-        // Hitta senast passerade måndag genom att gå bakåt från idag
         guard let lastMonday = calendar.date(byAdding: .day, value: -7, to: today),
             let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: lastMonday)) else {
                 return []

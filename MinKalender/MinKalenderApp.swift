@@ -4,19 +4,20 @@ import EventKit
 @main
 struct MinKalenderApp: App {
     @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate()
-    @StateObject var calendarData = CalendarData() // Initialize CalendarData
+    @StateObject var calendarData = CalendarData()
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some Scene {
         WindowGroup {
             ContentView(eventsForDay: $eventsForDay, selectedCalendars: $calendarData.selectedCalendars)
-                .environment(\.font, Font.custom("Verdana", size: 10))
+                .environment(\.font, Font.custom("KohinoorTelugu-Light", size: 10))
         }
     }
     
     func dateWithoutTime(_ date: Date, calendar: Calendar) -> Date {
         let components = calendar.dateComponents([.year, .month, .day], from: date)
                         return calendar.date(from: components) ?? date
-                    }
+    }
     
     private func isPastDate(_ date: Date, thisday: Date) -> Bool {
         return date < thisday
@@ -29,13 +30,13 @@ struct MinKalenderApp: App {
     func weekCalendarView(forDate today: Date, calendarData: CalendarData) -> some View {
         let startDate = findStartOfWeek(forDate: today)
         let calendar = Calendar.current
-        
         var grid: [[AnyView]] = []
-        
         let daySize = (UIScreen.main.bounds.size.height / 4.0) - 20
         let innerDayHeight = (daySize / 2)
-        
         let myCalendar = calendarData.selectedCalendars
+        var backgroundColor: Color {
+            return colorScheme == .dark ? Color.black : Color.white
+        }
         
         for i in 0..<4 {
             var row: [AnyView] = []
@@ -46,11 +47,10 @@ struct MinKalenderApp: App {
                 let isPast = isPastDate(thatday, thisday: thisday)
                 let isFuture = isFutureDate(thatday, thisday: thisday)
                 let dayNumber = calendar.component(.day, from: day)
-                
                 let eventsForCurrentDay = eventsForDay.filter { eventInfo in
-                                let eventStartDate = dateWithoutTime(eventInfo.event.startDate, calendar: calendar)
-                                return eventStartDate == thatday
-                            }
+                    let eventStartDate = dateWithoutTime(eventInfo.event.startDate, calendar: calendar)
+                    return eventStartDate == thatday
+                }
                 
                 row.append(AnyView(
                     VStack(alignment: .leading, spacing: 0) {
@@ -72,7 +72,7 @@ struct MinKalenderApp: App {
                                     .textCase(.uppercase)
                                     .foregroundColor(isPast ? Color.secondary.opacity(0.5) : isFuture ? Color.primary.opacity(0.7) : Color.primary.opacity(1))
                                     .background(.clear)
-                                    .padding(EdgeInsets(top: 0, leading: 6, bottom: 2, trailing: 4))
+                                    .padding(EdgeInsets(top: 0, leading: 10, bottom: 2, trailing: 4))
                                     .frame(maxWidth: .infinity, maxHeight: innerDayHeight, alignment: .leading)
                                     .frame(minHeight: 0)
                                     .background(Color.clear)
@@ -83,16 +83,46 @@ struct MinKalenderApp: App {
                         }
                     }
                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 5, trailing: 0))
-                        .frame(maxWidth: .infinity, maxHeight: daySize, alignment: .bottomLeading)
+                    .frame(maxWidth: .infinity, maxHeight: daySize, alignment: .bottomLeading)
                     .overlay(
-                        thatday == thisday ? RoundedRectangle(cornerRadius: 0)
-                            .stroke(Color.blue, lineWidth: 1)
-                            .background(Color.blue.opacity(0.1)) : nil
+                        thatday == thisday ? RoundedRectangle(cornerRadius: 8)
+                        .offset(x: -2, y: -2)
+                        .stroke(Color.blue, lineWidth: 1)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.clear)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        )
+                        .padding(EdgeInsets(top: -3, leading: -3, bottom: -3, trailing: -3))
+                        .shadow(color: Color(UIColor.systemGray).opacity(1), radius: 10, x: -2, y: -2)
+                        .zIndex(3)
+                        : nil
                     )
-                    .background(RoundedRectangle(cornerRadius: 0)
-                                    .stroke(Color.gray, lineWidth: 0.5)
-                                    .background(Color.clear)
-                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)))
+                    .background(
+                        thatday == thisday ? RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.clear, lineWidth: 1)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(UIColor.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        )
+                        .padding(EdgeInsets(top: -3, leading: -3, bottom: -3, trailing: -3))
+                        .shadow(color: Color(UIColor.systemGray).opacity(1), radius: 15, x: -4, y: 4)
+                        .offset(x: -2, y: -2)
+                        .zIndex(5)
+                        : RoundedRectangle(cornerRadius: 0)
+                            
+                        .stroke(Color.gray, lineWidth: 0.5)
+                        .background(
+                            RoundedRectangle(cornerRadius: 0)
+                                .fill(Color.clear)
+                                .clipShape(RoundedRectangle(cornerRadius: 0))
+                        )
+                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        .shadow(color: Color.clear, radius: 0, x: 0, y: 0)
+                        .offset(x: 0, y: 0)
+                        .zIndex(0)
+                    )
                     .alignmentGuide(.leading) { dimension in
                         dimension[.leading]
                     }

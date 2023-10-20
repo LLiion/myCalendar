@@ -66,7 +66,6 @@ struct MinKalenderApp: App {
                             if !eventsForDay.isEmpty {
                                 ForEach(eventsForCurrentDay, id: \.event.eventIdentifier) { eventInfo in
                                 let calendarName = eventInfo.event.calendar.title
-                                
                                     if myCalendar.contains(calendarName) {
                                     Text(eventInfo.event.title)
                                     .textCase(.uppercase)
@@ -94,7 +93,7 @@ struct MinKalenderApp: App {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         )
                         .padding(EdgeInsets(top: -3, leading: -3, bottom: -3, trailing: -3))
-                        .shadow(color: Color(UIColor.systemGray).opacity(1), radius: 10, x: -2, y: -2)
+                        //.shadow(radius: 15)
                         .zIndex(3)
                         : nil
                     )
@@ -107,11 +106,9 @@ struct MinKalenderApp: App {
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                         )
                         .padding(EdgeInsets(top: -3, leading: -3, bottom: -3, trailing: -3))
-                        .shadow(color: Color(UIColor.systemGray).opacity(1), radius: 15, x: -4, y: 4)
                         .offset(x: -2, y: -2)
                         .zIndex(5)
                         : RoundedRectangle(cornerRadius: 0)
-                            
                         .stroke(Color.gray, lineWidth: 0.5)
                         .background(
                             RoundedRectangle(cornerRadius: 0)
@@ -119,7 +116,6 @@ struct MinKalenderApp: App {
                                 .clipShape(RoundedRectangle(cornerRadius: 0))
                         )
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        .shadow(color: Color.clear, radius: 0, x: 0, y: 0)
                         .offset(x: 0, y: 0)
                         .zIndex(0)
                     )

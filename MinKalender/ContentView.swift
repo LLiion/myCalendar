@@ -6,6 +6,7 @@ struct WeekdayHeaderView: View {
     let weekdays = ["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"]
 
     @Binding var isMenuOpen: Bool
+    @Binding var isDayOpen: Bool
 
     var body: some View {
         HStack {
@@ -25,6 +26,14 @@ struct WeekdayHeaderView: View {
                     .padding(.horizontal, 5)
                     .frame(maxWidth: .infinity)
                     .offset(x: -25)
+            }
+            Button(action: {
+                isDayOpen.toggle()
+            }) {
+                Image(systemName: "clock")
+                    .font(.headline)
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 10)
             }
         }
         .background(Color.clear)
@@ -87,7 +96,6 @@ struct CalendarMenuView: View {
         .padding()
         .frame(width: (UIScreen.main.bounds.size.width / 4), height: (UIScreen.main.bounds.size.height), alignment: .topLeading)
         .background(Color(UIColor.systemBackground))
-        .shadow(color: Color(UIColor.systemGray).opacity(0.3), radius: 5, x: 2, y: 2)
         .position(x: (UIScreen.main.bounds.size.width / 8), y: UIScreen.main.bounds.size.height / 2)
         }
     }
@@ -98,14 +106,20 @@ struct ContentView: View {
     @AppStorage("hasRequestedCalendarAccess") private var hasRequestedCalendarAccess = false
     @State private var today = Date()
     @State private var isMenuOpen = false
+    @State private var isDayOpen = false
     @Binding var eventsForDay: [EventInfo]
     @Binding var selectedCalendars: Set<String>
-    @StateObject var calendarData = CalendarData()
+    @ObservedObject var calendarData = CalendarData()
+    @State private var offset: CGSize = .zero
+    
+//    //
+//    x-xcode-debug-views://7fa209614380?DBGViewDebuggerLaunchSessionParameter=7fa209614380 The layer is using dynamic shadows which are expensive to render. If possible try setting `shadowPath`, or pre-rendering the shadow into an image and putting it under the layer.
+//    //
     
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                WeekdayHeaderView(isMenuOpen: $isMenuOpen)
+                WeekdayHeaderView(isMenuOpen: $isMenuOpen, isDayOpen: $isDayOpen)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(height: 40)
                 if let isCalendarAuthorized = isCalendarAuthorized {
@@ -126,8 +140,35 @@ struct ContentView: View {
             if isMenuOpen {
                 CalendarMenuView(eventsForDay: $eventsForDay, isOpen: $isMenuOpen, selectedCalendars: $calendarData.selectedCalendars, calendarData: calendarData)
             }
+            if isDayOpen {
+                GeometryReader { geometry in
+//                    DayView(eventsForDay: $eventsForDay)
+//                        .frame(width: geometry.size.width / 4)
+//                        .background(Color.white)
+//                        .cornerRadius(10)
+//                        .padding()
+//                        .shadow(radius: 15)
+//                        .offset(x: max(min(offset.width, (geometry.size.width - (geometry.size.width / 3.5))), -geometry.size.width / 2), y: 0)
+//                        .gesture(
+//                            DragGesture()
+//                                .onChanged { value in
+//                                    offset.width = value.translation.width
+//                                }
+//                                .onEnded { value in
+//                                    if value.translation.width > geometry.size.width / 2 {
+//                                        offset = CGSize(width: geometry.size.width + (geometry.size.width / 4), height: 0)
+//                                    } else {
+//                                        offset = .zero
+//                                    }
+//                                }
+//                        )
+                }
+            }
+
+
+        
         }
-        .background(Color(UIColor.systemGray4).opacity(0.8))
+        //.background(Color(UIColor.systemGray4).opacity(0.8))
     }
 
     private func checkCalendarAuthorization() {

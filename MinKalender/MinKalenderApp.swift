@@ -1,16 +1,26 @@
 import SwiftUI
 import EventKit
+import Foundation
+
+struct AppSettings {
+    @AppStorage("userWantToPrintTime") var userWantToPrintTime: Bool = false
+    @AppStorage("opacityDim") var opacityDim = Double(0.6)
+   
+}
 
 @main
 struct MinKalenderApp: App {
     @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate()
     @StateObject var calendarData = CalendarData()
     @Environment(\.colorScheme) var colorScheme
-
+    @AppStorage("userWantToPrintTime") var userWantToPrintTime: Bool = false
+    @AppStorage("opacityDim") var opacityDim = Double(0.6)
+    
     var body: some Scene {
         WindowGroup {
-            ContentView(eventsForDay: $eventsForDay, selectedCalendars: $calendarData.selectedCalendars)
+            ContentView(eventsForDay: $eventsForDay, selectedCalendars: $calendarData.selectedCalendars, appSettings: AppSettings())
                 .environment(\.font, Font.custom("KohinoorTelugu-Light", size: 10))
+            
         }
     }
     
@@ -37,7 +47,7 @@ struct MinKalenderApp: App {
         var backgroundColor: Color {
             return colorScheme == .dark ? Color.black : Color.white
         }
-        
+
         for i in 0..<4 {
             var row: [AnyView] = []
             for j in 0..<7 {

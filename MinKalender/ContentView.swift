@@ -7,7 +7,7 @@ struct WeekdayHeaderView: View {
 
     @Binding var isMenuOpen: Bool
     @Binding var isDayOpen: Bool
-
+    
     var body: some View {
         HStack {
             Button(action: {
@@ -111,9 +111,13 @@ struct ContentView: View {
     @Binding var selectedCalendars: Set<String>
     @ObservedObject var calendarData = CalendarData()
     @State private var offset: CGSize = .zero
+    @State var appSettings = AppSettings()
+    //@Binding var appSettings.userWantToPrintTime: Bool
+    
+    //@Binding var appSettings.opacityDim: Double
     
 //    //
-//    x-xcode-debug-views://7fa209614380?DBGViewDebuggerLaunchSessionParameter=7fa209614380 The layer is using dynamic shadows which are expensive to render. If possible try setting `shadowPath`, or pre-rendering the shadow into an image and putting it under the layer.
+//     The layer is using dynamic shadows which are expensive to render. If possible try setting `shadowPath`, or pre-rendering the shadow into an image and putting it under the layer. But they're damn good looking.
 //    //
     
     var body: some View {
@@ -143,7 +147,7 @@ struct ContentView: View {
             if isDayOpen {
                 GeometryReader { geometry in
                     //DayView() // When testing DayView in preview, comment out below and use this
-                    DayView(eventsForDay: $eventsForDay)
+                    DayView(eventsForDay: $eventsForDay, userWantToPrintTime: appSettings.$userWantToPrintTime)
                         .frame(width: geometry.size.width / 4)
                         .background(Color(UIColor.systemBackground))
                         .cornerRadius(10)
@@ -169,7 +173,7 @@ struct ContentView: View {
 
         
         }
-        .background(Color(UIColor.systemGray4).opacity(0.6))
+        .background(Color(UIColor.systemGray2).opacity(appSettings.opacityDim))
     }
 
     private func checkCalendarAuthorization() {

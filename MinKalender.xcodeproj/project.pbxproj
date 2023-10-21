@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB1E9CC22AE43AC1005F8F84 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AB1E9CC12AE43AC0005F8F84 /* Settings.bundle */; };
 		AB6C9BD42ADAC2AB00195FFB /* MinKalenderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BD32ADAC2AB00195FFB /* MinKalenderApp.swift */; };
 		AB6C9BD62ADAC2AB00195FFB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BD52ADAC2AB00195FFB /* ContentView.swift */; };
 		AB6C9BD82ADAC2AE00195FFB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB6C9BD72ADAC2AE00195FFB /* Assets.xcassets */; };
@@ -18,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB1E9CC12AE43AC0005F8F84 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = MinKalender/Settings.bundle; sourceTree = "<group>"; };
+		AB1E9CC32AE43FF4005F8F84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AB5D12B62ADC4D1F00987076 /* MinKalender.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MinKalender.entitlements; sourceTree = "<group>"; };
 		AB6C9BD02ADAC2AB00195FFB /* MinKalender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MinKalender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB6C9BD32ADAC2AB00195FFB /* MinKalenderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinKalenderApp.swift; sourceTree = "<group>"; };
@@ -44,6 +47,7 @@
 		AB6C9BC72ADAC2AB00195FFB = {
 			isa = PBXGroup;
 			children = (
+				AB1E9CC12AE43AC0005F8F84 /* Settings.bundle */,
 				AB6C9BD22ADAC2AB00195FFB /* MinKalender */,
 				AB6C9BD12ADAC2AB00195FFB /* Products */,
 			);
@@ -60,6 +64,7 @@
 		AB6C9BD22ADAC2AB00195FFB /* MinKalender */ = {
 			isa = PBXGroup;
 			children = (
+				AB1E9CC32AE43FF4005F8F84 /* Info.plist */,
 				AB5D12B62ADC4D1F00987076 /* MinKalender.entitlements */,
 				AB7AA3E52AE0693500EA23F6 /* DayView.swift */,
 				AB6C9BE62ADAC46000195FFB /* MinaEvent.swift */,
@@ -140,6 +145,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB6C9BDB2ADAC2AE00195FFB /* Preview Assets.xcassets in Resources */,
+				AB1E9CC22AE43AC1005F8F84 /* Settings.bundle in Resources */,
 				AB6C9BD82ADAC2AE00195FFB /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,6 +297,7 @@
 				DEVELOPMENT_TEAM = 4AKR93CK7Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MinKalender/Info.plist;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Need access to show calender events";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -323,6 +330,7 @@
 				DEVELOPMENT_TEAM = 4AKR93CK7Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MinKalender/Info.plist;
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Need access to show calender events";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

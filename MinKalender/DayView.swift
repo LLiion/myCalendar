@@ -6,9 +6,22 @@ struct DayView: View {
     @State private var slideOverHeight: CGFloat = 0
     @State var currentTimePosition: CGFloat = 0
     @Binding var eventsForDay: [EventInfo]
+    @Binding var userWantToPrintTime: Bool
+
     //@State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate() // When testing in preview
     
     var timeUpdateInterval: TimeInterval = 30
+    
+    var eventTime: String? // Eventuell tid
+
+    func userWantToPrintTime(_ eventInfo: EventInfo) -> String? {
+        if userWantToPrintTime {
+            let dateFormatter = DateFormatter()
+            dateFormatter.timeStyle = .short // Här använder vi .short för stilen .time
+            return dateFormatter.string(from: eventInfo.event.startDate)
+        }
+        return nil
+    }
     
     private var timeIntervals: [String] {
         var intervals = [String]()
@@ -87,10 +100,17 @@ struct DayView: View {
             
             ZStack {
                 ForEach(filteredEventInfos, id: \.event.eventIdentifier) { eventInfo in
+                    
                     ZStack {
-                        Text("\(eventInfo.event.startDate, style: .time) - \(eventInfo.event.title)")
-                        .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate))
-                        .padding(0)
+                        if let timeToPrint = userWantToPrintTime(eventInfo) {
+                        Text("\(timeToPrint) - \(eventInfo.event.title)")
+                            .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate))
+                            .padding(0)
+                        } else {
+                            Text("\(eventInfo.event.title)")
+                                .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate))
+                                .padding(0)
+                        }
                     }
                 }
                 .frame(height: slideOverHeight)

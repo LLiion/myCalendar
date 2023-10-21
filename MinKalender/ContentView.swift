@@ -142,33 +142,34 @@ struct ContentView: View {
             }
             if isDayOpen {
                 GeometryReader { geometry in
-//                    DayView(eventsForDay: $eventsForDay)
-//                        .frame(width: geometry.size.width / 4)
-//                        .background(Color.white)
-//                        .cornerRadius(10)
-//                        .padding()
-//                        .shadow(radius: 15)
-//                        .offset(x: max(min(offset.width, (geometry.size.width - (geometry.size.width / 3.5))), -geometry.size.width / 2), y: 0)
-//                        .gesture(
-//                            DragGesture()
-//                                .onChanged { value in
-//                                    offset.width = value.translation.width
-//                                }
-//                                .onEnded { value in
-//                                    if value.translation.width > geometry.size.width / 2 {
-//                                        offset = CGSize(width: geometry.size.width + (geometry.size.width / 4), height: 0)
-//                                    } else {
-//                                        offset = .zero
-//                                    }
-//                                }
-//                        )
+                    //DayView() // When testing DayView in preview, comment out below and use this
+                    DayView(eventsForDay: $eventsForDay)
+                        .frame(width: geometry.size.width / 4)
+                        .background(Color(UIColor.systemBackground))
+                        .cornerRadius(10)
+                        .padding()
+                        .shadow(radius: 40)
+                        .offset(x: max(min(offset.width, (geometry.size.width - (geometry.size.width / 3.5))), -geometry.size.width / 2), y: 0)
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    offset.width = value.translation.width
+                                }
+                                .onEnded { value in
+                                    if value.translation.width > geometry.size.width / 2 {
+                                        offset = CGSize(width: geometry.size.width + (geometry.size.width / 4), height: 0)
+                                    } else {
+                                        offset = .zero
+                                    }
+                                }
+                        )
                 }
             }
 
 
         
         }
-        //.background(Color(UIColor.systemGray4).opacity(0.8))
+        .background(Color(UIColor.systemGray4).opacity(0.6))
     }
 
     private func checkCalendarAuthorization() {

@@ -90,10 +90,8 @@ struct MinKalenderApp: App {
                         .background(
                             RoundedRectangle(cornerRadius: 8)
                             .fill(Color.clear)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         )
                         .padding(EdgeInsets(top: -3, leading: -3, bottom: -3, trailing: -3))
-                        //.shadow(radius: 15)
                         .zIndex(3)
                         : nil
                     )
@@ -119,6 +117,7 @@ struct MinKalenderApp: App {
                         .offset(x: 0, y: 0)
                         .zIndex(0)
                     )
+                    .shadow(radius: 15)
                     .alignmentGuide(.leading) { dimension in
                         dimension[.leading]
                     }

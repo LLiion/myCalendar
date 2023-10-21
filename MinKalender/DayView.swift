@@ -17,7 +17,7 @@ struct DayView: View {
     func userWantToPrintTime(_ eventInfo: EventInfo) -> String? {
         if userWantToPrintTime {
             let dateFormatter = DateFormatter()
-            dateFormatter.timeStyle = .short // Här använder vi .short för stilen .time
+            dateFormatter.timeStyle = .short
             return dateFormatter.string(from: eventInfo.event.startDate)
         }
         return nil
@@ -44,9 +44,12 @@ struct DayView: View {
     private var filteredEventInfos: [EventInfo] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
+        
         return sortedEventInfos.filter { eventInfo in
             let eventDate = calendar.startOfDay(for: eventInfo.event.startDate)
-            return eventDate == today //&& eventInfo.calendarName == "Hem"
+            return eventDate == today && eventInfo.calendarName == "Fredrik hem"
+        }.enumerated().map { (index, eventInfo) in
+            return EventInfo(event: eventInfo.event, calendarName: eventInfo.event.calendar.title, stackingNumber: index)
         }
     }
     
@@ -99,22 +102,27 @@ struct DayView: View {
             .frame(height: slideOverHeight)
             
             ZStack {
+                
                 ForEach(filteredEventInfos, id: \.event.eventIdentifier) { eventInfo in
+                    // Also give padding 20 top + bottom to this part to correct time
                     
                     ZStack {
-                        if let timeToPrint = userWantToPrintTime(eventInfo) {
-                        Text("\(timeToPrint) - \(eventInfo.event.title)")
-                            .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate))
-                            .padding(0)
+                        
+                    let stackNr = (eventInfo.stackingNumber ?? 0) * 10
+                    
+                    if let timeToPrint = userWantToPrintTime(eventInfo) {
+                            Text("\(timeToPrint) - \(eventInfo.event.title)")
+                            .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr))
+                                .padding(0)
                         } else {
                             Text("\(eventInfo.event.title)")
-                                .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate))
+                                .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr))
                                 .padding(0)
                         }
                     }
                 }
                 .frame(height: slideOverHeight)
-                .padding(0)
+                .padding(EdgeInsets(top: -20, leading: 0, bottom: -20, trailing: 0))
             }
             .frame(maxWidth: .infinity, maxHeight: slideOverHeight)
         }

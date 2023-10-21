@@ -112,9 +112,6 @@ struct ContentView: View {
     @ObservedObject var calendarData = CalendarData()
     @State private var offset: CGSize = .zero
     @State var appSettings = AppSettings()
-    //@Binding var appSettings.userWantToPrintTime: Bool
-    
-    //@Binding var appSettings.opacityDim: Double
     
 //    //
 //     The layer is using dynamic shadows which are expensive to render. If possible try setting `shadowPath`, or pre-rendering the shadow into an image and putting it under the layer. But they're damn good looking.
@@ -146,7 +143,6 @@ struct ContentView: View {
             }
             if isDayOpen {
                 GeometryReader { geometry in
-                    //DayView() // When testing DayView in preview, comment out below and use this
                     DayView(eventsForDay: $eventsForDay, userWantToPrintTime: appSettings.$userWantToPrintTime)
                         .frame(width: geometry.size.width / 4)
                         .background(Color(UIColor.systemBackground))
@@ -169,9 +165,6 @@ struct ContentView: View {
                         )
                 }
             }
-
-
-        
         }
         .background(Color(UIColor.systemGray2).opacity(appSettings.opacityDim))
     }

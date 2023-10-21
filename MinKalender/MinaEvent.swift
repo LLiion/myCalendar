@@ -3,6 +3,7 @@ import EventKit
 struct EventInfo: Equatable {
     var event: EKEvent
     var calendarName: String
+    var stackingNumber: Int?
 }
 
 class MinaEvent {

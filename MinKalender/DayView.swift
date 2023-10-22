@@ -105,6 +105,7 @@ struct DayView: View {
                         let yPos = timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr) + 9
                             Text("\(timeToPrint) - \(eventInfo.event.title)")
                                 .textCase(.uppercase)
+                                .font(Font.system(size: 12, weight: .bold))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .position(x: 0, y: yPos * 0.915) // This is to compensate text height offset
                                 .padding(0)
@@ -119,7 +120,6 @@ struct DayView: View {
                     .padding(EdgeInsets(top: 0, leading: 60, bottom: 0, trailing: 0))
                 }
                 .frame(maxWidth: .infinity, maxHeight: slideOverHeight, alignment: .topLeading)
-                
                 .offset(x: 60, y: 10)
             }
             .frame(maxWidth: geometry.size.width * 0.8, maxHeight: slideOverHeight, alignment: .topLeading)

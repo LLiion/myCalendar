@@ -8,6 +8,15 @@ struct AppSettings {
    
 }
 
+extension Date {
+    func endOfDay(calendar: Calendar) -> Date {
+        var components = DateComponents()
+        components.day = 1
+        components.second = -1
+        return calendar.date(byAdding: components, to: calendar.startOfDay(for: self))!
+    }
+}
+
 @main
 struct MinKalenderApp: App {
     @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate()
@@ -47,6 +56,7 @@ struct MinKalenderApp: App {
         var backgroundColor: Color {
             return colorScheme == .dark ? Color.black : Color.white
         }
+        var isAllDayEvent = false
 
         for i in 0..<4 {
             var row: [AnyView] = []
@@ -59,7 +69,12 @@ struct MinKalenderApp: App {
                 let dayNumber = calendar.component(.day, from: day)
                 let eventsForCurrentDay = eventsForDay.filter { eventInfo in
                     let eventStartDate = dateWithoutTime(eventInfo.event.startDate, calendar: calendar)
+                    let eventEndDate = dateWithoutTime(eventInfo.event.endDate, calendar: calendar)
+                    
                     return eventStartDate == thatday
+                }
+                var isAllDayEvent = eventsForCurrentDay.contains { eventInfo in
+                    return eventInfo.event.startDate == thatday && eventInfo.event.endDate == thatday.endOfDay(calendar: calendar)
                 }
                 
                 row.append(AnyView(
@@ -76,16 +91,30 @@ struct MinKalenderApp: App {
                             if !eventsForDay.isEmpty {
                                 ForEach(eventsForCurrentDay, id: \.event.eventIdentifier) { eventInfo in
                                 let calendarName = eventInfo.event.calendar.title
-                                    if myCalendar.contains(calendarName) {
+                                    if myCalendar.contains(calendarName) && !isAllDayEvent {
                                     Text(eventInfo.event.title)
                                     .textCase(.uppercase)
                                     .foregroundColor(isPast ? Color.secondary.opacity(0.5) : isFuture ? Color.primary.opacity(0.7) : Color.primary.opacity(1))
-                                    .background(.clear)
+                                    .background(Color.clear)
                                     .padding(EdgeInsets(top: 0, leading: 10, bottom: 2, trailing: 4))
                                     .frame(maxWidth: .infinity, maxHeight: innerDayHeight, alignment: .leading)
                                     .frame(minHeight: 0)
                                     .background(Color.clear)
                                     .listRowSeparator(.hidden)
+                                    } else if myCalendar.contains(calendarName) && isAllDayEvent {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(isPast ? Color(UIColor.systemGray).opacity(0.5) : isFuture ? Color(UIColor.systemGray).opacity(0.2) : Color(UIColor.systemGray).opacity(0.4))
+                                                .frame(maxWidth: .infinity, maxHeight: innerDayHeight / 3, alignment: .leading)
+                                                .padding(EdgeInsets(top: 4, leading: 10, bottom: 4, trailing: 10))
+                                            
+                                            Text(eventInfo.event.title)
+                                                .textCase(.uppercase)
+                                                .foregroundColor(isPast ? Color.secondary.opacity(0.5) : isFuture ? Color.primary.opacity(0.5) : Color.primary.opacity(1))
+                                                .padding(EdgeInsets(top: 4, leading: 10, bottom: 4, trailing: 10))
+                                                .font(Font.system(size: 12, weight: .bold))
+                                                .listRowSeparator(.hidden)
+                                        }
                                     }
                                 }
                             }
@@ -116,6 +145,7 @@ struct MinKalenderApp: App {
                         .padding(EdgeInsets(top: -3, leading: -3, bottom: -3, trailing: -3))
                         .offset(x: -2, y: -2)
                         .zIndex(5)
+                        .shadow(radius: 15)
                         : RoundedRectangle(cornerRadius: 0)
                         .stroke(Color.gray, lineWidth: 0.5)
                         .background(
@@ -126,8 +156,8 @@ struct MinKalenderApp: App {
                         .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                         .offset(x: 0, y: 0)
                         .zIndex(0)
+                        .shadow(radius: 0)
                     )
-                    .shadow(radius: 15)
                     .alignmentGuide(.leading) { dimension in
                         dimension[.leading]
                     }
@@ -155,4 +185,4 @@ struct MinKalenderApp: App {
             return calendar.date(from: components) ?? date
         }
     
-    }
+}

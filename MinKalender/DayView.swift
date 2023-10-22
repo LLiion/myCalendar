@@ -5,10 +5,11 @@ struct DayView: View {
     
     @State private var slideOverHeight: CGFloat = 0
     @State var currentTimePosition: CGFloat = 0
+
     @Binding var eventsForDay: [EventInfo]
     @Binding var userWantToPrintTime: Bool
-
-    //@State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate() // When testing in preview
+//    var userWantToPrintTime: Bool = true
+//    @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate() // When testing in preview
     
     var timeUpdateInterval: TimeInterval = 30
     
@@ -81,11 +82,6 @@ struct DayView: View {
 
     var body: some View {
         ZStack {
-            Text("⋯")
-                .font(.custom("STIXGeneral-Bold", size: 28))
-                .foregroundColor(Color(UIColor.systemGray))
-                .padding(-30)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         GeometryReader { geometry in
         ZStack {
             ForEach(7...22, id: \.self) { hour in
@@ -95,36 +91,38 @@ struct DayView: View {
                     .offset(x: 15, y: (timeToPixel(time: time)))
                     .foregroundColor(Color.gray)
                     .padding(0)
-                    
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: slideOverHeight, alignment: .topLeading)
             .frame(height: slideOverHeight)
             
             ZStack {
-                
                 ForEach(filteredEventInfos, id: \.event.eventIdentifier) { eventInfo in
-                    // Also give padding 20 top + bottom to this part to correct time
-                    
+                    // Also give padding 20 bottom to this part to correct time, or find the fault elsewhere
                     ZStack {
-                        
-                    let stackNr = (eventInfo.stackingNumber ?? 0) * 10
-                    
+                    let stackNr = (eventInfo.stackingNumber ?? 0) * 17
                     if let timeToPrint = userWantToPrintTime(eventInfo) {
+                        let yPos = timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr) + 9
                             Text("\(timeToPrint) - \(eventInfo.event.title)")
-                            .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr))
+                                .textCase(.uppercase)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .position(x: 0, y: yPos * 0.915) // This is to compensate text height offset
                                 .padding(0)
                         } else {
                             Text("\(eventInfo.event.title)")
-                                .position(x: 120, y: timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr))
+                                .textCase(.uppercase)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .position(x: 0, y: timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr))
                                 .padding(0)
                         }
                     }
+                    .padding(EdgeInsets(top: 0, leading: 60, bottom: 0, trailing: 0))
                 }
-                .frame(height: slideOverHeight)
-                .padding(EdgeInsets(top: -20, leading: 0, bottom: -20, trailing: 0))
+                .frame(maxWidth: .infinity, maxHeight: slideOverHeight, alignment: .topLeading)
+                
+                .offset(x: 60, y: 10)
             }
-            .frame(maxWidth: .infinity, maxHeight: slideOverHeight)
+            .frame(maxWidth: geometry.size.width * 0.8, maxHeight: slideOverHeight, alignment: .topLeading)
         }
         .frame(maxWidth: .infinity, maxHeight: slideOverHeight, alignment: .topLeading)
         .onAppear {
@@ -150,22 +148,43 @@ struct DayView: View {
                 .offset(x: 0, y: currentTimePosition)
         )
     }
-    .overlay(
+    .overlay( // Outer border
         (RoundedRectangle(cornerRadius: 10)
         .stroke(Color(UIColor.systemGray), lineWidth: 0.7))
         .background(Color.clear)
-            .padding(EdgeInsets(top: -20, leading: 0, bottom: -20, trailing: 0))
+        .padding(EdgeInsets(top: -20, leading: 0, bottom: -20, trailing: 0))
         )
-    }
+    .overlay(
+        VStack {
+            HStack {
+                Spacer()
+        Text("⋯") // Refuses to be centered. Later perhaps give it a white background för UI recognition.
+            .font(.custom("STIXGeneral-Bold", size: 28))
+            .foregroundColor(Color(UIColor.systemGray))
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .position(y: -10)
+            .padding(0)
+                Spacer()
+        }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        Spacer()
+        }
+    )
+    
+
+            
+        } // This is geometryReader
         .padding(EdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0))
+        
+        
     }
 }
 
+
+
+//
 //struct Previews_DayView_Previews: PreviewProvider {
 //    static var previews: some View {
-//        Group {
-//            DayView()
-//.previewInterfaceOrientation(.landscapeRight)
-//        }
+//        DayView()
 //    }
 //}

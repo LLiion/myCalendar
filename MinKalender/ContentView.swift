@@ -101,9 +101,9 @@ struct CalendarMenuView: View {
     }
 
 struct ContentView: View {
-    @State private var isCalendarAuthorized: Bool?
+    @State var isCalendarAuthorized: Bool?
     @State private var showCalendarAccessAlert = false
-    @AppStorage("hasRequestedCalendarAccess") private var hasRequestedCalendarAccess = false
+    @AppStorage("hasRequestedCalendarAccess") var hasRequestedCalendarAccess = false
     @State private var today = Date()
     @State private var isMenuOpen = false
     @State private var isDayOpen = false
@@ -142,9 +142,10 @@ struct ContentView: View {
                 CalendarMenuView(eventsForDay: $eventsForDay, isOpen: $isMenuOpen, selectedCalendars: $calendarData.selectedCalendars, calendarData: calendarData)
             }
             if isDayOpen {
-                GeometryReader { geometry in
+               GeometryReader { geometry in
+  //                 DayView()
                     DayView(eventsForDay: $eventsForDay, userWantToPrintTime: appSettings.$userWantToPrintTime)
-                        .frame(width: geometry.size.width / 4)
+                       .frame(width: geometry.size.width / 3.5)
                         .background(Color(UIColor.systemBackground))
                         .cornerRadius(10)
                         .padding()

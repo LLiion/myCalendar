@@ -23,7 +23,7 @@ struct MinKalenderApp: App {
             
         }
     }
-    
+    // Below from here should move
     func dateWithoutTime(_ date: Date, calendar: Calendar) -> Date {
         let components = calendar.dateComponents([.year, .month, .day], from: date)
                         return calendar.date(from: components) ?? date
@@ -36,7 +36,7 @@ struct MinKalenderApp: App {
     private func isFutureDate(_ date: Date, thisday: Date) -> Bool {
         return date > thisday
     }
-    
+    // This  really should be in a separate file...
     func weekCalendarView(forDate today: Date, calendarData: CalendarData) -> some View {
         let startDate = findStartOfWeek(forDate: today)
         let calendar = Calendar.current

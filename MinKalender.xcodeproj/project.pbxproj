@@ -21,6 +21,7 @@
 /* Begin PBXFileReference section */
 		AB1E9CC12AE43AC0005F8F84 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = MinKalender/Settings.bundle; sourceTree = "<group>"; };
 		AB1E9CC32AE43FF4005F8F84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		AB3B5F5F2AE55C76001337EF /* ThingsToDo.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = ThingsToDo.md; path = MinKalender/ThingsToDo.md; sourceTree = "<group>"; };
 		AB5D12B62ADC4D1F00987076 /* MinKalender.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MinKalender.entitlements; sourceTree = "<group>"; };
 		AB6C9BD02ADAC2AB00195FFB /* MinKalender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MinKalender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB6C9BD32ADAC2AB00195FFB /* MinKalenderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinKalenderApp.swift; sourceTree = "<group>"; };
@@ -47,6 +48,7 @@
 		AB6C9BC72ADAC2AB00195FFB = {
 			isa = PBXGroup;
 			children = (
+				AB3B5F5F2AE55C76001337EF /* ThingsToDo.md */,
 				AB1E9CC12AE43AC0005F8F84 /* Settings.bundle */,
 				AB6C9BD22ADAC2AB00195FFB /* MinKalender */,
 				AB6C9BD12ADAC2AB00195FFB /* Products */,

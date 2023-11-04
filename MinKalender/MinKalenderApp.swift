@@ -8,14 +8,17 @@ struct AppSettings {
    
 }
 
-extension Date {
-    func endOfDay(calendar: Calendar) -> Date {
-        var components = DateComponents()
-        components.day = 1
-        components.second = -1
-        return calendar.date(byAdding: components, to: calendar.startOfDay(for: self))!
-    }
-}
+//extension Date {
+//    func endOfDay(calendar: Calendar) -> Date {
+//        var components = DateComponents()
+//        components.day = 1
+//        components.second = -1
+//        return calendar.date(byAdding: components, to: calendar.startOfDay(for: self))!
+//    }
+//    func startOfDay(calendar: Calendar) -> Date {
+//            return calendar.date(bySettingHour: 0, minute: 0, second: 0, of: self) ?? self
+//        }
+//}
 
 @main
 struct MinKalenderApp: App {
@@ -45,6 +48,7 @@ struct MinKalenderApp: App {
     private func isFutureDate(_ date: Date, thisday: Date) -> Bool {
         return date > thisday
     }
+
     // This  really should be in a separate file...
     func weekCalendarView(forDate today: Date, calendarData: CalendarData) -> some View {
         let startDate = findStartOfWeek(forDate: today)
@@ -56,7 +60,6 @@ struct MinKalenderApp: App {
         var backgroundColor: Color {
             return colorScheme == .dark ? Color.black : Color.white
         }
-        var isAllDayEvent = false
 
         for i in 0..<4 {
             var row: [AnyView] = []
@@ -67,14 +70,11 @@ struct MinKalenderApp: App {
                 let isPast = isPastDate(thatday, thisday: thisday)
                 let isFuture = isFutureDate(thatday, thisday: thisday)
                 let dayNumber = calendar.component(.day, from: day)
+                
                 let eventsForCurrentDay = eventsForDay.filter { eventInfo in
                     let eventStartDate = dateWithoutTime(eventInfo.event.startDate, calendar: calendar)
-                    let eventEndDate = dateWithoutTime(eventInfo.event.endDate, calendar: calendar)
                     
                     return eventStartDate == thatday
-                }
-                var isAllDayEvent = eventsForCurrentDay.contains { eventInfo in
-                    return eventInfo.event.startDate == thatday && eventInfo.event.endDate == thatday.endOfDay(calendar: calendar)
                 }
                 
                 row.append(AnyView(
@@ -90,8 +90,12 @@ struct MinKalenderApp: App {
                             Spacer()
                             if !eventsForDay.isEmpty {
                                 ForEach(eventsForCurrentDay, id: \.event.eventIdentifier) { eventInfo in
+                                    
                                 let calendarName = eventInfo.event.calendar.title
-                                    if myCalendar.contains(calendarName) && !isAllDayEvent {
+                                    if myCalendar.contains(calendarName) {
+                                        let isAllDayEvent = eventInfo.event.isAllDay
+                                        
+                                        if !isAllDayEvent {
                                     Text(eventInfo.event.title)
                                     .textCase(.uppercase)
                                     .foregroundColor(isPast ? Color.secondary.opacity(0.5) : isFuture ? Color.primary.opacity(0.7) : Color.primary.opacity(1))
@@ -101,20 +105,23 @@ struct MinKalenderApp: App {
                                     .frame(minHeight: 0)
                                     .background(Color.clear)
                                     .listRowSeparator(.hidden)
-                                    } else if myCalendar.contains(calendarName) && isAllDayEvent {
+                                    } else {
                                         ZStack {
                                             RoundedRectangle(cornerRadius: 8)
                                                 .fill(isPast ? Color(UIColor.systemGray).opacity(0.5) : isFuture ? Color(UIColor.systemGray).opacity(0.2) : Color(UIColor.systemGray).opacity(0.4))
                                                 .frame(maxWidth: .infinity, maxHeight: innerDayHeight / 3, alignment: .leading)
-                                                .padding(EdgeInsets(top: 4, leading: 10, bottom: 4, trailing: 10))
+                                                .padding(EdgeInsets(top: 4, leading: 0, bottom: -4, trailing: 0))
                                             
-                                            Text(eventInfo.event.title)
+                                            
+                                            Text("\(eventInfo.event.title)")
                                                 .textCase(.uppercase)
                                                 .foregroundColor(isPast ? Color.secondary.opacity(0.5) : isFuture ? Color.primary.opacity(0.5) : Color.primary.opacity(1))
-                                                .padding(EdgeInsets(top: 4, leading: 10, bottom: 4, trailing: 10))
+                                                .padding(EdgeInsets(top: 4, leading: 10, bottom: 0, trailing: 10))
                                                 .font(Font.system(size: 12, weight: .bold))
                                                 .listRowSeparator(.hidden)
                                         }
+                                    }
+                                       
                                     }
                                 }
                             }

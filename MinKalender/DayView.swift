@@ -105,15 +105,19 @@ struct DayView: View {
                         let yPos = timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr) + 9
                             Text("\(timeToPrint) - \(eventInfo.event.title)")
                                 .textCase(.uppercase)
+                                .foregroundColor(Color.secondary.opacity(1))
                                 .font(Font.system(size: 12, weight: .bold))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .position(x: 0, y: yPos * 0.915) // This is to compensate text height offset
                                 .padding(0)
                         } else {
+                            let yPos = timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr) + 9
                             Text("\(eventInfo.event.title)")
                                 .textCase(.uppercase)
+                                .foregroundColor(Color.secondary.opacity(1))
+                                .font(Font.system(size: 12, weight: .bold))
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .position(x: 0, y: timeToPixel(time: eventInfo.event.startDate) + CGFloat(stackNr))
+                                .position(x: 0, y: yPos * 0.915) // This is to compensate text height offset
                                 .padding(0)
                         }
                     }

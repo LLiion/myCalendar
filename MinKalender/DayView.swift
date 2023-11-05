@@ -13,7 +13,7 @@ struct DayView: View {
     //    var userWantToPrintTime: Bool = true
     //    @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate() // When testing in preview
     
-    //@State var taskCalendar: String = "Fredrik hem"
+    //@State var taskCalendar: String = "Hem"
     var timeUpdateInterval: TimeInterval = 30
     
     var eventTime: String? // Eventuell tid
@@ -42,6 +42,27 @@ struct DayView: View {
         }
         return intervals
     }
+    
+    
+    //    private func updateTasksForSelectedCalendar() {
+    //            tasksForDay = sortedTaskInfos.filter { taskInfo in
+    //                let taskDate = calendar.startOfDay(for: taskInfo.event.startDate)
+    //                return taskDate == today && taskInfo.calendarName == selectedCalendar
+    //            }.enumerated().map { (index, taskInfo) in
+    //                return TaskInfo(event: taskInfo.event, calendarName: taskInfo.event.calendar.title, stackingNumber: index)
+    //            }
+    //        }
+//
+//    private func filteredTaskInfos() -> [TaskInfo] {
+//            let calendar = Calendar.current
+//            let today = calendar.startOfDay(for: Date())
+//    return sortedTaskInfos.filter { taskInfo in
+//        let taskDate = calendar.startOfDay(for: taskInfo.event.startDate)
+//        return taskDate == today && taskInfo.calendarName == dailyTasks
+//    }.enumerated().map { (index, taskInfo) in
+//        return TaskInfo(event: taskInfo.event, calendarName: taskInfo.event.calendar.title, stackingNumber: index)
+//    }
+//  }
     
     private var sortedTaskInfos: [TaskInfo] {
         return tasksForDay.sorted { $0.task.startDate < $1.task.startDate }

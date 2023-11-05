@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AB1E9CC22AE43AC1005F8F84 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AB1E9CC12AE43AC0005F8F84 /* Settings.bundle */; };
+		AB22D8132AF6D428009AD3AE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = AB22D8152AF6D428009AD3AE /* Localizable.strings */; };
 		AB6C9BD42ADAC2AB00195FFB /* MinKalenderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BD32ADAC2AB00195FFB /* MinKalenderApp.swift */; };
 		AB6C9BD62ADAC2AB00195FFB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6C9BD52ADAC2AB00195FFB /* ContentView.swift */; };
 		AB6C9BD82ADAC2AE00195FFB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB6C9BD72ADAC2AE00195FFB /* Assets.xcassets */; };
@@ -21,6 +22,8 @@
 /* Begin PBXFileReference section */
 		AB1E9CC12AE43AC0005F8F84 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = MinKalender/Settings.bundle; sourceTree = "<group>"; };
 		AB1E9CC32AE43FF4005F8F84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		AB22D8142AF6D428009AD3AE /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
+		AB22D8162AF6D42A009AD3AE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		AB3B5F5F2AE55C76001337EF /* ThingsToDo.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = ThingsToDo.md; path = MinKalender/ThingsToDo.md; sourceTree = "<group>"; };
 		AB5D12B62ADC4D1F00987076 /* MinKalender.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MinKalender.entitlements; sourceTree = "<group>"; };
 		AB6C9BD02ADAC2AB00195FFB /* MinKalender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MinKalender.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,6 +74,7 @@
 				AB7AA3E52AE0693500EA23F6 /* DayView.swift */,
 				AB6C9BE62ADAC46000195FFB /* MinaEvent.swift */,
 				AB6C9BD32ADAC2AB00195FFB /* MinKalenderApp.swift */,
+				AB22D8152AF6D428009AD3AE /* Localizable.strings */,
 				AB6C9BD52ADAC2AB00195FFB /* ContentView.swift */,
 				AB6C9BD72ADAC2AE00195FFB /* Assets.xcassets */,
 				AB6C9BDC2ADAC2AE00195FFB /* Persistence.swift */,
@@ -130,6 +134,7 @@
 			knownRegions = (
 				en,
 				Base,
+				sv,
 			);
 			mainGroup = AB6C9BC72ADAC2AB00195FFB;
 			productRefGroup = AB6C9BD12ADAC2AB00195FFB /* Products */;
@@ -147,6 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB6C9BDB2ADAC2AE00195FFB /* Preview Assets.xcassets in Resources */,
+				AB22D8132AF6D428009AD3AE /* Localizable.strings in Resources */,
 				AB1E9CC22AE43AC1005F8F84 /* Settings.bundle in Resources */,
 				AB6C9BD82ADAC2AE00195FFB /* Assets.xcassets in Resources */,
 			);
@@ -169,6 +175,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		AB22D8152AF6D428009AD3AE /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AB22D8142AF6D428009AD3AE /* sv */,
+				AB22D8162AF6D42A009AD3AE /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		AB6C9BE12ADAC2AE00195FFB /* Debug */ = {

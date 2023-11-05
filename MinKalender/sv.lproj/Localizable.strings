@@ -1,0 +1,17 @@
+/* 
+  Localizable.strings
+  MinKalender
+
+  Created by Lottis on 2023-11-04.
+  
+*/
+"Monday" = "Måndag";
+"Tuesday" = "Tisdag";
+"Wednesday" = "Onsdag";
+"Thursday" = "Torsdag";
+"Friday" = "Fredag";
+"Saturday" = "Lördag";
+"Sunday" = "Söndag";
+"Close" = "Stäng meny";
+"allow.access" = "Tillåt kalendertillgång";
+"loading" = "Laddar...";

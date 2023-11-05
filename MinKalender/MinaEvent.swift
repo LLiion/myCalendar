@@ -38,3 +38,43 @@ class MinaEvent {
         return eventInfoList
     }
 }
+
+
+struct TaskInfo: Equatable {
+    var task: EKEvent
+    var calendarName: String
+    var stackingNumber: Int?
+}
+
+class MyTasks {
+    static func fetchTasksForDate() -> [TaskInfo] {
+        let eventStore = EKEventStore()
+        let calendar = Calendar.autoupdatingCurrent
+
+        var dateComponents = DateComponents()
+        dateComponents.weekday = 2  // Måndag
+        let today = calendar.startOfDay(for: Date())
+        
+        guard let lastMonday = calendar.date(byAdding: .day, value: -7, to: today),
+            let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: lastMonday)) else {
+                return []
+        }
+
+        guard let endDate = calendar.date(byAdding: .day, value: 35, to: startOfWeek) else {
+            return []
+        }
+
+        let predicate = eventStore.predicateForEvents(withStart: startOfWeek, end: endDate, calendars: nil)
+        let tasks = eventStore.events(matching: predicate)
+
+        var taskInfoList: [TaskInfo] = []
+
+        for task in tasks {
+            let calendarName = task.calendar.title
+            let taskInfo = TaskInfo(task: task, calendarName: calendarName)
+            taskInfoList.append(taskInfo)
+        }
+
+        return taskInfoList
+    }
+}

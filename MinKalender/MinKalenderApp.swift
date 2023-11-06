@@ -99,7 +99,7 @@ struct MinKalenderApp: App {
                     VStack(alignment: .leading, spacing: 0) {
                         Text("\(dayNumber)")
                             .font(.headline)
-                            .foregroundColor(thatday == thisday ? .blue : isPast ? Color.gray.opacity(0.5) : Color.gray.opacity(1))
+                            .foregroundColor(thatday == thisday ? .blue : isPast ? Color.gray.opacity(opacityDim / 2) : Color.gray.opacity(opacityDim))
                             .background(.clear)
                             .padding(EdgeInsets(top: 2, leading: 2, bottom: 0, trailing: 0))
                             .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
@@ -116,7 +116,7 @@ struct MinKalenderApp: App {
                                         if !isAllDayEvent {
                                             Text(eventInfo.event.title)
                                                 .textCase(.uppercase)
-                                                .foregroundColor(isPast ? Color.secondary.opacity(0.5) : isFuture ? Color.primary.opacity(0.7) : Color.primary.opacity(1))
+                                                .foregroundColor(isPast ? Color.secondary.opacity(opacityDim / 2) : isFuture ? Color.primary.opacity(opacityDim) : Color.primary.opacity(1))
                                                 .background(Color.clear)
                                                 .padding(EdgeInsets(top: 0, leading: 10, bottom: 2, trailing: 4))
                                                 .frame(maxWidth: .infinity, maxHeight: innerDayHeight, alignment: .leading)
@@ -126,14 +126,14 @@ struct MinKalenderApp: App {
                                         } else {
                                             ZStack {
                                                 RoundedRectangle(cornerRadius: 8)
-                                                    .fill(isPast ? Color(UIColor.systemGray).opacity(0.5) : isFuture ? Color(UIColor.systemGray).opacity(0.2) : Color(UIColor.systemGray).opacity(0.4))
+                                                    .fill(isPast ? Color(UIColor.systemGray).opacity(opacityDim / 2) : isFuture ? Color(UIColor.systemGray).opacity(opacityDim) : Color(UIColor.systemGray).opacity(opacityDim))
                                                     .frame(maxWidth: .infinity, maxHeight: innerDayHeight / 3, alignment: .leading)
                                                     .padding(EdgeInsets(top: 4, leading: 0, bottom: -4, trailing: 0))
                                                 
                                                 
                                                 Text("\(eventInfo.event.title)")
                                                     .textCase(.uppercase)
-                                                    .foregroundColor(isPast ? Color.secondary.opacity(0.5) : isFuture ? Color.primary.opacity(0.5) : Color.primary.opacity(1))
+                                                    .foregroundColor(isPast ? Color.secondary.opacity(opacityDim / 2) : isFuture ? Color.primary.opacity(opacityDim) : Color.primary.opacity(1))
                                                     .padding(EdgeInsets(top: 4, leading: 10, bottom: 0, trailing: 10))
                                                     .font(Font.system(size: 12, weight: .bold))
                                                     .listRowSeparator(.hidden)
@@ -200,6 +200,7 @@ struct MinKalenderApp: App {
                 }
             }
         }
+        .padding()
     }
     
     private func findStartOfWeek(forDate date: Date) -> Date {

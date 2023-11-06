@@ -16,25 +16,20 @@ struct WeekdayHeaderView: View {
     @Binding var hideSettingsIcons: Bool
     
     var body: some View {
-        HStack {
-            if !hideSettingsIcons {
-                Button(action: {
-                    isMenuOpen.toggle()
-                }) {
-                    Image(systemName: "line.horizontal.3")
-                        .font(.headline)
-                        .foregroundColor(.blue)
-                        .padding(.horizontal, 10)
+        ZStack {
+            HStack {
+                if !hideSettingsIcons {
+                    Button(action: {
+                        isMenuOpen.toggle()
+                    }) {
+                        Image(systemName: "line.horizontal.3")
+                            .font(.headline)
+                            .foregroundColor(.blue)
+                            .padding(.horizontal, 10)
+                    }
                 }
-            }
-            ForEach(weekdays, id: \.self) { weekday in
-                Text(weekday)
-                    .font(.headline)
-                    .textCase(.uppercase)
-                    .padding(.horizontal, 5)
-                    .frame(maxWidth: .infinity)
-                    .offset(x: -25)
-            }
+                Spacer()
+                
             Button(action: {
                 isDayOpen.toggle()
             }) {
@@ -43,9 +38,28 @@ struct WeekdayHeaderView: View {
                     .foregroundColor(.blue)
                     .padding(.horizontal, 10)
             }
+        } // HStack
+        .frame(maxWidth: .infinity)
+        
+        ZStack {
+            HStack {
+                ForEach(weekdays, id: \.self) { weekday in
+                    Text(weekday)
+                        .font(.headline)
+                        .textCase(.uppercase)
+                        //.padding(.horizontal, 5)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .background(Color.clear)
+            .foregroundColor(Color(UIColor.systemGray))
+            .padding()
         }
+        .frame(maxWidth: .infinity)
+        .padding(0)
         .background(Color.clear)
-        .foregroundColor(Color(UIColor.systemGray))
+    }
     }
 }
 
@@ -91,6 +105,7 @@ class CalendarData: ObservableObject {
             saveSelectedCalendars()
         }
     }
+    
     init() {
         if let savedCalendars = UserDefaults.standard.stringArray(forKey: "selectedCalendars") {
             self.selectedCalendars = Set(savedCalendars)
@@ -110,7 +125,6 @@ struct CalendarMenuView: View {
     @Binding var isOpen: Bool
     @Binding var selectedCalendars: Set<String>
     @ObservedObject var calendarData: CalendarData
-    
     
     var body: some View {
         VStack {
@@ -161,7 +175,7 @@ struct ContentView: View {
     @Binding var hideSettingsIcons: Bool
     
     let calendar = Calendar.current
-
+    
     //     The layer is using dynamic shadows which are expensive to render. If possible try setting `shadowPath`, or pre-rendering the shadow into an image and putting it under the layer. But they're damn good looking.
     //    //
     
@@ -195,24 +209,24 @@ struct ContentView: View {
             if isDayOpen {
                 
                 GeometryReader { geometry in
-  
-//      Dayview kunde dyka upp på rätt sida beroende på dag
-//                    let dayOfWeek = calendar.component(.weekday, from: today)
-//                    let isMondayToWednesday: Bool
-//
-//                    if dayOfWeek <= 3 {
-//                        isMondayToWednesday = true
-//                    } else {
-//                        isMondayToWednesday = false
-//                    }
-//
-//                    let xOffset: CGFloat
-//
-//                    if isMondayToWednesday {
-//                        xOffset = -geometry.size.width / 2
-//                    } else {
-//                        xOffset = (geometry.size.width - (geometry.size.width / 3.5))
-//                    }
+                    
+                    //      Dayview kunde dyka upp på rätt sida beroende på dag
+                    //                    let dayOfWeek = calendar.component(.weekday, from: today)
+                    //                    let isMondayToWednesday: Bool
+                    //
+                    //                    if dayOfWeek <= 3 {
+                    //                        isMondayToWednesday = true
+                    //                    } else {
+                    //                        isMondayToWednesday = false
+                    //                    }
+                    //
+                    //                    let xOffset: CGFloat
+                    //
+                    //                    if isMondayToWednesday {
+                    //                        xOffset = -geometry.size.width / 2
+                    //                    } else {
+                    //                        xOffset = (geometry.size.width - (geometry.size.width / 3.5))
+                    //                    }
                     
                     
                     //  DayView()
@@ -220,7 +234,7 @@ struct ContentView: View {
                         .frame(width: geometry.size.width / 4)
                         .background(Color(UIColor.systemBackground))
                         .cornerRadius(10)
-                        .padding()
+                        .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
                         .shadow(radius: 40)
                         .offset(x: max(min(offset.width, (geometry.size.width - (geometry.size.width / 3.5))), -geometry.size.width / 2), y: 0)
                         .gesture(
@@ -239,7 +253,7 @@ struct ContentView: View {
                 }
             }
         }
-        .background(Color(UIColor.systemGray4).opacity(appSettings.opacityDim))
+        //.background(Color(UIColor.systemGray4).opacity(appSettings.opacityDim)) // removed greying background and choose to dim foreground instead, much neeter
     }
     
     private func checkCalendarAuthorization() {

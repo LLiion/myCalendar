@@ -1,5 +1,7 @@
 # Things to Address
 
+** translate for settingsbundle the strings
+
 ** AND it has to reload once in a while, right now it shows the same day as when first started app.
 
 **Timeline Event Placement:** Ensure that timeline events are accurately positioned at their respective times. The current positioning may not align correctly with the time.

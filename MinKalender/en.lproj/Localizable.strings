@@ -5,3 +5,14 @@
   Created by Lottis on 2023-11-04.
   
 */
+"Monday" = "Monday";
+"Tuesday" = "Tuesday";
+"Wednesday" = "Wednesday";
+"Thursday" = "Thursday";
+"Friday" = "Friday";
+"Saturday" = "Saturday";
+"Sunday" = "Sunday";
+"Close" = "Close menue";
+"allow.access" = "Allow local calendar-access";
+"loading" = "Laddar...";
+"Hem" = "Home";

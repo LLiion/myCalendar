@@ -5,7 +5,7 @@ import Foundation
 struct AppSettings {
     @AppStorage("userWantToPrintTime") var userWantToPrintTime: Bool = false
     @AppStorage("opacityDim") var opacityDim = Double(0.6)
-    
+    @AppStorage("hideSettingsIcons") var hideSettingsIcons: Bool = false
 }
 
 //extension Date {
@@ -29,12 +29,14 @@ struct MinKalenderApp: App {
     @Environment(\.colorScheme) var colorScheme
     @AppStorage("userWantToPrintTime") var userWantToPrintTime: Bool = false
     @AppStorage("opacityDim") var opacityDim = Double(0.6)
+    @AppStorage("hideSettingsIcons") var hideSettingsIcons: Bool = false
+
 
     let calendar = Calendar.autoupdatingCurrent
     
     var body: some Scene {
         WindowGroup {
-            ContentView(eventsForDay: $eventsForDay, tasksForDay: $tasksForDay, selectedCalendars: $calendarData.selectedCalendars, appSettings: AppSettings(), dailyTasks: $dailyTaskData.dailyTasks)
+            ContentView(eventsForDay: $eventsForDay, tasksForDay: $tasksForDay, selectedCalendars: $calendarData.selectedCalendars, appSettings: AppSettings(), dailyTasks: $dailyTaskData.dailyTasks, hideSettingsIcons: $hideSettingsIcons)
                 .environment(\.font, Font.custom("KohinoorTelugu-Light", size: 10))
                 .onAppear {
                     Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { timer in
@@ -43,6 +45,7 @@ struct MinKalenderApp: App {
                         if !Calendar.current.isDate(currentDate, inSameDayAs: today) {
                             today = currentDate
                             eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate()
+                            tasksForDay = MyTasks.fetchTasksForDate()
                         }
                     }
                 }

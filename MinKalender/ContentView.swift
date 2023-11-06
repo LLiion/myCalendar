@@ -13,18 +13,20 @@ struct WeekdayHeaderView: View {
     
     @Binding var isMenuOpen: Bool
     @Binding var isDayOpen: Bool
+    @Binding var hideSettingsIcons: Bool
     
     var body: some View {
         HStack {
-            Button(action: {
-                isMenuOpen.toggle()
-            }) {
-                Image(systemName: "line.horizontal.3")
-                    .font(.headline)
-                    .foregroundColor(.blue)
-                    .padding(.horizontal, 10)
+            if !hideSettingsIcons {
+                Button(action: {
+                    isMenuOpen.toggle()
+                }) {
+                    Image(systemName: "line.horizontal.3")
+                        .font(.headline)
+                        .foregroundColor(.blue)
+                        .padding(.horizontal, 10)
+                }
             }
-            
             ForEach(weekdays, id: \.self) { weekday in
                 Text(weekday)
                     .font(.headline)
@@ -43,7 +45,7 @@ struct WeekdayHeaderView: View {
             }
         }
         .background(Color.clear)
-        .foregroundColor(.gray)
+        .foregroundColor(Color(UIColor.systemGray))
     }
 }
 
@@ -51,16 +53,18 @@ class EventStoreHelper {
     static func getAllCalendars() -> [String] {
         let eventStore = EKEventStore()
         var calendarNames: [String] = []
-
+        
         if EKEventStore.authorizationStatus(for: .event) == .authorized {
             let calendars = eventStore.calendars(for: .event)
             calendarNames = calendars.map { $0.title }
         }
-
+        
         return calendarNames
     }
 }
-
+// Still looking for some foolproof way to always get ONE standard calendar when failing.
+// This hardcoded name is not good though, but it cant be them all.
+// Kinda defies the purpose of this app.
 class DailyTaskData: ObservableObject {
     @Published var dailyTasks: Set<String> {
         didSet {
@@ -78,7 +82,8 @@ class DailyTaskData: ObservableObject {
         let taskArray = Array(dailyTasks)
         UserDefaults.standard.set(taskArray, forKey: "dailyTasks")
     }
-}
+} // Just nu använder jag taskCalendar som variabel, läser den från dailyTasks och
+//placerar i filterTasks - många vändor i onödan.
 
 class CalendarData: ObservableObject {
     @Published var selectedCalendars: Set<String> {
@@ -152,15 +157,18 @@ struct ContentView: View {
     @State var appSettings = AppSettings()
     @Binding var dailyTasks: Set<String>
     @ObservedObject var dailyTaskData = DailyTaskData()
+    @State var taskCalendar: String = "Hem"
+    @Binding var hideSettingsIcons: Bool
     
-    //    //
+    let calendar = Calendar.current
+
     //     The layer is using dynamic shadows which are expensive to render. If possible try setting `shadowPath`, or pre-rendering the shadow into an image and putting it under the layer. But they're damn good looking.
     //    //
     
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                WeekdayHeaderView(isMenuOpen: $isMenuOpen, isDayOpen: $isDayOpen)
+                WeekdayHeaderView(isMenuOpen: $isMenuOpen, isDayOpen: $isDayOpen, hideSettingsIcons: appSettings.$hideSettingsIcons)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(height: 40)
                 if let isCalendarAuthorized = isCalendarAuthorized {
@@ -168,7 +176,7 @@ struct ContentView: View {
                         //MinKalenderApp().weekCalendarView(forDate: today, calendarData: calendarData)
                         MinKalenderApp()
                             .weekCalendarView(forDate: today, calendarData: calendarData)
-
+                        
                     } else {
                         Text("allow.access")
                             .onAppear {
@@ -183,11 +191,32 @@ struct ContentView: View {
             }
             if isMenuOpen {
                 CalendarMenuView(eventsForDay: $eventsForDay, isOpen: $isMenuOpen, selectedCalendars: $calendarData.selectedCalendars, calendarData: calendarData)
-            }
+            } // Think I've gotten lazy and just adding more and more args... tidyup?
             if isDayOpen {
+                
                 GeometryReader { geometry in
-                                   //  DayView()
-                    DayView(dailyTaskData: dailyTaskData, dailyTasks: $dailyTaskData.dailyTasks, tasksForDay: $tasksForDay, userWantToPrintTime: appSettings.$userWantToPrintTime)
+  
+//      Dayview kunde dyka upp på rätt sida beroende på dag
+//                    let dayOfWeek = calendar.component(.weekday, from: today)
+//                    let isMondayToWednesday: Bool
+//
+//                    if dayOfWeek <= 3 {
+//                        isMondayToWednesday = true
+//                    } else {
+//                        isMondayToWednesday = false
+//                    }
+//
+//                    let xOffset: CGFloat
+//
+//                    if isMondayToWednesday {
+//                        xOffset = -geometry.size.width / 2
+//                    } else {
+//                        xOffset = (geometry.size.width - (geometry.size.width / 3.5))
+//                    }
+                    
+                    
+                    //  DayView()
+                    DayView(dailyTaskData: dailyTaskData, dailyTasks: $dailyTaskData.dailyTasks, tasksForDay: $tasksForDay, userWantToPrintTime: appSettings.$userWantToPrintTime, hideSettingsIcons: appSettings.$hideSettingsIcons, taskCalendar: $taskCalendar)
                         .frame(width: geometry.size.width / 4)
                         .background(Color(UIColor.systemBackground))
                         .cornerRadius(10)
@@ -210,7 +239,7 @@ struct ContentView: View {
                 }
             }
         }
-        .background(Color(UIColor.systemBackground).opacity(appSettings.opacityDim))
+        .background(Color(UIColor.systemGray4).opacity(appSettings.opacityDim))
     }
     
     private func checkCalendarAuthorization() {

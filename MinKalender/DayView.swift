@@ -9,11 +9,13 @@ struct DayView: View {
     @Binding var dailyTasks: Set<String>
     @Binding var tasksForDay: [TaskInfo]
     @Binding var userWantToPrintTime: Bool
+    @Binding var hideSettingsIcons: Bool
+    @State private var filterTasks: [TaskInfo] = []
     
     //    var userWantToPrintTime: Bool = true
     //    @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate() // When testing in preview
     
-    //@State var taskCalendar: String = "Hem"
+    @Binding var taskCalendar: String// = "Hem"
     var timeUpdateInterval: TimeInterval = 30
     
     var eventTime: String? // Eventuell tid
@@ -53,30 +55,30 @@ struct DayView: View {
     //            }
     //        }
 //
-//    private func filteredTaskInfos() -> [TaskInfo] {
-//            let calendar = Calendar.current
-//            let today = calendar.startOfDay(for: Date())
-//    return sortedTaskInfos.filter { taskInfo in
-//        let taskDate = calendar.startOfDay(for: taskInfo.event.startDate)
-//        return taskDate == today && taskInfo.calendarName == dailyTasks
-//    }.enumerated().map { (index, taskInfo) in
-//        return TaskInfo(event: taskInfo.event, calendarName: taskInfo.event.calendar.title, stackingNumber: index)
-//    }
-//  }
+    private var filteredTaskInfos: [TaskInfo] {
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: Date())
+    return sortedTaskInfos.filter { taskInfo in
+        let taskDate = calendar.startOfDay(for: taskInfo.task.startDate)
+        return taskDate == today && taskInfo.calendarName == taskCalendar
+    }.enumerated().map { (index, taskInfo) in
+        return TaskInfo(task: taskInfo.task, calendarName: taskInfo.task.calendar.title, stackingNumber: index)
+    }
+  }
     
     private var sortedTaskInfos: [TaskInfo] {
         return tasksForDay.sorted { $0.task.startDate < $1.task.startDate }
     }
-    
-    private var filteredTaskInfos: [TaskInfo] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-        
-        return sortedTaskInfos.filter { taskInfo in
-            let taskDate = calendar.startOfDay(for: taskInfo.task.startDate)
-            return taskDate == today && dailyTaskData.dailyTasks.contains(taskInfo.calendarName)
-        }
-    }
+//
+//    private var filteredTaskInfos: [TaskInfo] {
+//        let calendar = Calendar.current
+//        let today = calendar.startOfDay(for: Date())
+//
+//        return sortedTaskInfos.filter { taskInfo in
+//            let taskDate = calendar.startOfDay(for: taskInfo.task.startDate)
+//            return taskDate == today && dailyTaskData.dailyTasks.contains(taskCalendar)//taskInfo.calendarName)
+//        }
+//    }
 
     func timeToPixel(time: Date) -> CGFloat {
         let calendar = Calendar.current
@@ -131,23 +133,41 @@ struct DayView: View {
                                     .padding()
                                 
                                 Spacer()
-                                Picker("Select Calendar", selection: $dailyTasks) {
-                                    ForEach(Array(dailyTaskData.dailyTasks), id: \.self) { calendarName in
+                                // Now also has to save changes of calendar in DailyView
+                                if !hideSettingsIcons {
+                                Picker("Select Calendar", selection: $taskCalendar) {
+                                    ForEach(dailyTaskData.dailyTasks.sorted(), id: \.self) { calendarName in
                                         Text(calendarName)
-                                        
                                     }
                                 }
-                                .foregroundColor(Color.black)
                                 .padding()
+                                .foregroundColor(Color.black)
                                 .onChange(of: dailyTasks) { newTasks in
-                                    print("nu händer nåt")
-                                    tasksForDay = filteredTaskInfos
+                                    taskCalendar = newTasks.first ?? taskCalendar
+                                    filterTasks = self.filteredTaskInfos
+                                    print(taskCalendar)
                                 }
+                            }
+                                // Not sure that default is legal?
+                                
+//                                Button(action: { This was debug, leaving it for now
+//                                    if taskCalendar == "Hem" {
+//                                    taskCalendar = "Fredrik hem"
+//                                    } else {
+//                                        taskCalendar = "Hem"
+//                                    }
+//                                    print("bytt kalender")
+//                                }) {
+//                                    Image(systemName: "cart")
+//                                        .foregroundColor(Color.black)
+//                                        .padding()
+//                                        .frame(width: 200, height: 200, alignment: .center)
+//                                }
+                                
                             }
                             .frame(maxWidth: .infinity, alignment: .center)
                         }
                     )
-                    
                     
                     ZStack {
                         ForEach(filteredTaskInfos, id: \.task.eventIdentifier) { taskInfo in

@@ -76,28 +76,83 @@ class EventStoreHelper {
         return calendarNames
     }
 }
-// Still looking for some foolproof way to always get ONE standard calendar when failing.
-// This hardcoded name is not good though, but it cant be them all.
-// Kinda defies the purpose of this app.
+
 class DailyTaskData: ObservableObject {
+    @Published var selectedTaskCalendar: [String] {
+        didSet {
+            saveDailyTasks()
+        }
+    }
     @Published var dailyTasks: Set<String> {
         didSet {
             saveDailyTasks()
         }
     }
+    
     init() {
-        if let taskCalendar = UserDefaults.standard.stringArray(forKey: "dailyTasks") {
-            self.dailyTasks = Set(taskCalendar)
+         self.selectedTaskCalendar = ["Hem"] // Cant empty this one all the time...
+       // self.dailyTasks = Set([])
+
+        if let taskCalendarFromUserDefaults = UserDefaults.standard.stringArray(forKey: "selectedTaskCalendar") {
+            self.selectedTaskCalendar = taskCalendarFromUserDefaults
         } else {
-            self.dailyTasks = Set(["Hem"])
+            let tasksForDate = MyTasks.fetchTasksForDate()
+            let calendarNames = tasksForDate.map { $0.calendarName }
+            self.selectedTaskCalendar = calendarNames
         }
+
+        self.dailyTasks = Set(EventStoreHelper.getAllCalendars())
     }
+
+
     private func saveDailyTasks() {
+        print("save")
         let taskArray = Array(dailyTasks)
         UserDefaults.standard.set(taskArray, forKey: "dailyTasks")
+        UserDefaults.standard.set(selectedTaskCalendar, forKey: "selectedTaskCalendar")
     }
-} // Just nu använder jag taskCalendar som variabel, läser den från dailyTasks och
-//placerar i filterTasks - många vändor i onödan.
+}
+
+// Putting this one that works ok here, in case I make it worse. This does not save though.
+//class DailyTaskData: ObservableObject {
+//    var selectedTaskCalendar: [String] {
+//        didSet {
+//            saveDailyTasks()
+//        }
+//    }
+//    @Published var dailyTasks: Set<String> {
+//        didSet {
+//            saveDailyTasks()
+//        }
+//    }
+//
+//// Nested myself in so many bindings and vars so I lost the save,
+//// I'm dropping this for now to not make it worse... Got to fix later.
+//// Right now updates get into selectedTaskCalendar but dailyTasks keeps
+//// the full array and are the published one...
+//
+//    init() {
+//        if EKEventStore.authorizationStatus(for: .event) == .authorized {
+//            let tasksForDate = MyTasks.fetchTasksForDate()
+//            let calendarNames = tasksForDate.map { $0.calendarName }
+//            selectedTaskCalendar = calendarNames
+//        } else {
+//            selectedTaskCalendar = []
+//        }
+//
+//        if let taskCalendarFromUserDefaults = UserDefaults.standard.string(forKey: "selectedTaskCalendar") {
+//            selectedTaskCalendar = [taskCalendarFromUserDefaults]
+//        }
+//
+//        self.dailyTasks = Set(selectedTaskCalendar)
+//    }
+//
+//    private func saveDailyTasks() {
+//        let taskArray = Array(dailyTasks)
+//        UserDefaults.standard.set(taskArray, forKey: "dailyTasks")
+//        UserDefaults.standard.set(selectedTaskCalendar, forKey: "selectedTaskCalendar")
+//    }
+//}
 
 class CalendarData: ObservableObject {
     @Published var selectedCalendars: Set<String> {
@@ -171,7 +226,7 @@ struct ContentView: View {
     @State var appSettings = AppSettings()
     @Binding var dailyTasks: Set<String>
     @ObservedObject var dailyTaskData = DailyTaskData()
-    @State var taskCalendar: String = "Hem"
+    @State var taskCalendar: String
     @Binding var hideSettingsIcons: Bool
     
     let calendar = Calendar.current
@@ -230,7 +285,7 @@ struct ContentView: View {
                     
                     
                     //  DayView()
-                    DayView(dailyTaskData: dailyTaskData, dailyTasks: $dailyTaskData.dailyTasks, tasksForDay: $tasksForDay, userWantToPrintTime: appSettings.$userWantToPrintTime, hideSettingsIcons: appSettings.$hideSettingsIcons, taskCalendar: $taskCalendar)
+                    DayView(dailyTaskData: dailyTaskData, dailyTasks: $dailyTaskData.dailyTasks, tasksForDay: $tasksForDay, userWantToPrintTime: appSettings.$userWantToPrintTime, hideSettingsIcons: appSettings.$hideSettingsIcons, taskCalendar: $taskCalendar, selectedTaskCalendar: $dailyTaskData.selectedTaskCalendar)
                         .frame(width: geometry.size.width / 4)
                         .background(Color(UIColor.systemBackground))
                         .cornerRadius(10)

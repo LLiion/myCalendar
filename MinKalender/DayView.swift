@@ -15,7 +15,8 @@ struct DayView: View {
     //    var userWantToPrintTime: Bool = true
     //    @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate() // When testing in preview
     
-    @Binding var taskCalendar: String// = "Hem"
+    @Binding var taskCalendar: String
+    @Binding var selectedTaskCalendar: [String]
     var timeUpdateInterval: TimeInterval = 30
     
     var eventTime: String? // Eventuell tid
@@ -105,6 +106,7 @@ struct DayView: View {
             .fill(Color(UIColor.systemGray))
         }
     }
+    @State private var isMenuVisible = false
     
     var body: some View {
         ZStack {
@@ -118,6 +120,7 @@ struct DayView: View {
                                     .offset(x: 15, y: (timeToPixel(time: time)))
                                     .foregroundColor(Color.gray)
                                     .padding(0)
+                                    .font(Font.footnote)
                             }
                         }
                         .frame(maxWidth: .infinity, maxHeight: slideOverHeight, alignment: .topLeading)
@@ -134,37 +137,31 @@ struct DayView: View {
                                         .padding()
                                     
                                     Spacer()
+                                    
                                     // Now also has to save changes of calendar in DailyView
                                     if !hideSettingsIcons {
-                                        Picker("Select Calendar", selection: $taskCalendar) {
-                                            ForEach(dailyTaskData.dailyTasks.sorted(), id: \.self) { calendarName in
-                                                Text(calendarName)
+                                        Menu {
+                                            Picker("Select Calendar", selection: $taskCalendar) {
+                                                ForEach(dailyTaskData.dailyTasks.sorted(), id: \.self) { calendarName in
+                                                    Text(calendarName)
+                                                    
+                                                }
                                             }
-                                        }
+                                            .padding()
+                                            .foregroundColor(Color.black)
+                                            .onChange(of: taskCalendar) { calendarName in
+                                                taskCalendar = calendarName
+                                                filterTasks = self.filteredTaskInfos
+                                                dailyTaskData.selectedTaskCalendar = [calendarName]
+                                                print(selectedTaskCalendar)
+                                            }
+                                        } label: {
+                                            Image(systemName: "calendar")
+                                                .font(.system(size: 30))
+                                        } // Menu
                                         .padding()
-                                        .foregroundColor(Color.black)
-                                        .onChange(of: dailyTasks) { newTasks in
-                                            taskCalendar = newTasks.first ?? taskCalendar
-                                            filterTasks = self.filteredTaskInfos
-                                            print(taskCalendar)
-                                        }
+                                        .frame(width: 50, height: 50)
                                     }
-                                    // Not sure that default is legal?
-                                    
-                                    //                                Button(action: { This was debug, leaving it for now
-                                    //                                    if taskCalendar == "Hem" {
-                                    //                                    taskCalendar = "Fredrik hem"
-                                    //                                    } else {
-                                    //                                        taskCalendar = "Hem"
-                                    //                                    }
-                                    //                                    print("bytt kalender")
-                                    //                                }) {
-                                    //                                    Image(systemName: "cart")
-                                    //                                        .foregroundColor(Color.black)
-                                    //                                        .padding()
-                                    //                                        .frame(width: 200, height: 200, alignment: .center)
-                                    //                                }
-                                    
                                 }
                                 .frame(maxWidth: .infinity, alignment: .center)
                             }
@@ -172,15 +169,17 @@ struct DayView: View {
                         
                         ZStack {
                             ForEach(filteredTaskInfos, id: \.task.eventIdentifier) { taskInfo in
-                                // Also give padding 20 bottom to this part to correct time, or find the fault elsewhere
+                                let timeDifference = Calendar.current.dateComponents([.hour], from: taskInfo.task.startDate, to: Date())
+                                let isBefore = timeDifference.hour ?? 0 > 2
+                                
                                 ZStack {
                                     let stackNr = (taskInfo.stackingNumber ?? 0) * 17
                                     if let timeToPrint = userWantToPrintTime(taskInfo) {
                                         let yPos = timeToPixel(time: taskInfo.task.startDate) + CGFloat(stackNr) + 9
                                         Text("\(timeToPrint) - \(taskInfo.task.title)")
                                             .textCase(.uppercase)
-                                            .foregroundColor(Color.secondary.opacity(1))
-                                            .font(Font.system(size: 12, weight: .bold))
+                                            .foregroundColor(isBefore ? Color.secondary.opacity(0.4) : Color.secondary.opacity(1))
+                                            .font(Font.caption)
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                             .position(x: 0, y: yPos * 0.915) // This is to compensate text height offset
                                             .padding(0)
@@ -188,8 +187,8 @@ struct DayView: View {
                                         let yPos = timeToPixel(time: taskInfo.task.startDate) + CGFloat(stackNr) + 9
                                         Text("\(taskInfo.task.title)")
                                             .textCase(.uppercase)
-                                            .foregroundColor(Color.secondary.opacity(1))
-                                            .font(Font.system(size: 12, weight: .bold))
+                                            .foregroundColor(isBefore ? Color.secondary.opacity(0.4) : Color.secondary.opacity(1))
+                                            .font(Font.caption)
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                             .position(x: 0, y: yPos * 0.915) // This is to compensate text height offset
                                             .padding(0)
@@ -214,13 +213,13 @@ struct DayView: View {
                     }
                     .background(
                         LinearGradient(
-                            gradient: Gradient(colors: [Color(UIColor.systemGray).opacity(0.9), Color(UIColor.systemBackground).opacity(0)]),
-                            startPoint: .top,
-                            endPoint: UnitPoint(x: 0.5, y: (currentTimePosition / slideOverHeight) * 1.5)
+                            gradient: Gradient(colors: [Color(UIColor.systemBlue).opacity(0.6), Color(UIColor.systemBackground).opacity(0)]),
+                            startPoint: UnitPoint(x: 0.5, y: (currentTimePosition / slideOverHeight) * 0.8),
+                            endPoint: UnitPoint(x: 0.5, y: (currentTimePosition / slideOverHeight) * 1.2)
                         )
-                            .offset(y: 20)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .padding(EdgeInsets(top: -20, leading: 0, bottom: -20, trailing: 0))
+                        .offset(y: 20)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .padding(EdgeInsets(top: -20, leading: 0, bottom: -20, trailing: 0))
                     )
                     .overlay(
                         TriangularIndicator()
@@ -230,8 +229,8 @@ struct DayView: View {
                 .overlay( // Outer border
                     (RoundedRectangle(cornerRadius: 10)
                         .stroke(Color(UIColor.systemGray).opacity(0.5), lineWidth: 0.7))
-                        .background(Color.clear)
-                        .padding(EdgeInsets(top: -20, leading: 0, bottom: -20, trailing: 0))
+                    .background(Color.clear)
+                    .padding(EdgeInsets(top: -20, leading: 0, bottom: -20, trailing: 0))
                 )
             }
             .padding(EdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0)) // To help position the text

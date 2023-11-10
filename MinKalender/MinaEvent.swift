@@ -39,11 +39,11 @@ class MinaEvent {
     }
 }
 
-
 struct TaskInfo: Equatable {
     var task: EKEvent
     var calendarName: String
     var stackingNumber: Int?
+    var index: Int?
 }
 
 class MyTasks {
@@ -66,12 +66,16 @@ class MyTasks {
 
         let predicate = eventStore.predicateForEvents(withStart: startOfWeek, end: endDate, calendars: nil)
         let tasks = eventStore.events(matching: predicate)
-
+        
         var taskInfoList: [TaskInfo] = []
 
         for task in tasks {
             let calendarName = task.calendar.title
-            let taskInfo = TaskInfo(task: task, calendarName: calendarName)
+            
+            let components = calendar.dateComponents([.hour, .minute], from: task.startDate)
+            let stackingNumber = (components.hour ?? 0) * 60 + (components.minute ?? 0)
+            let taskInfo = TaskInfo(task: task, calendarName: calendarName, stackingNumber: stackingNumber)
+            
             taskInfoList.append(taskInfo)
         }
 

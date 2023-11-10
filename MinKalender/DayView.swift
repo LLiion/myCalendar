@@ -7,16 +7,18 @@ struct DayView: View {
     @State var currentTimePosition: CGFloat = 0
     @ObservedObject var dailyTaskData: DailyTaskData
     @Binding var dailyTasks: Set<String>
+    @Binding var taskCalendar: String
     @Binding var tasksForDay: [TaskInfo]
     @Binding var userWantToPrintTime: Bool
     @Binding var hideSettingsIcons: Bool
     @State private var filterTasks: [TaskInfo] = []
+    @Binding var opacityDim: Double
     
     //    var userWantToPrintTime: Bool = true
     //    @State var eventsForDay = MinaEvent.fetchCalendarsAndEventsForDate() // When testing in preview
     
-    @Binding var taskCalendar: String
-    @Binding var selectedTaskCalendar: [String]
+   // @Binding var taskCalendar: taskCalendar
+   // @ObservedObject var selectedTaskCalendar: [String]
     var timeUpdateInterval: TimeInterval = 30
     
     var eventTime: String? // Eventuell tid
@@ -46,26 +48,28 @@ struct DayView: View {
         return intervals
     }
     
-    
-    //    private func updateTasksForSelectedCalendar() {
-    //            tasksForDay = sortedTaskInfos.filter { taskInfo in
-    //                let taskDate = calendar.startOfDay(for: taskInfo.event.startDate)
-    //                return taskDate == today && taskInfo.calendarName == selectedCalendar
-    //            }.enumerated().map { (index, taskInfo) in
-    //                return TaskInfo(event: taskInfo.event, calendarName: taskInfo.event.calendar.title, stackingNumber: index)
-    //            }
-    //        }
-    //
+ 
     private var filteredTaskInfos: [TaskInfo] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        return sortedTaskInfos.filter { taskInfo in
+        
+        let groupedTaskInfos = Dictionary(grouping: sortedTaskInfos.filter { taskInfo in
             let taskDate = calendar.startOfDay(for: taskInfo.task.startDate)
-            return taskDate == today && taskInfo.calendarName == taskCalendar
-        }.enumerated().map { (index, taskInfo) in
-            return TaskInfo(task: taskInfo.task, calendarName: taskInfo.task.calendar.title, stackingNumber: index)
+            return taskDate == today && taskInfo.calendarName == dailyTaskData.taskCalendar
+        }) { $0.stackingNumber ?? 0 }
+        
+        var resultTaskInfos: [TaskInfo] = []
+        
+        for (_, group) in groupedTaskInfos {
+            for (index, taskInfo) in group.enumerated() {
+                let updatedTaskInfo = TaskInfo(task: taskInfo.task, calendarName: taskInfo.task.calendar.title, stackingNumber: taskInfo.stackingNumber, index: index)
+                resultTaskInfos.append(updatedTaskInfo)
+            }
         }
+        
+        return resultTaskInfos
     }
+
     
     private var sortedTaskInfos: [TaskInfo] {
         return tasksForDay.sorted { $0.task.startDate < $1.task.startDate }
@@ -138,22 +142,23 @@ struct DayView: View {
                                     
                                     Spacer()
                                     
-                                    // Now also has to save changes of calendar in DailyView
+// Saving IS correct now - but I've mixed up what I start with
                                     if !hideSettingsIcons {
                                         Menu {
                                             Picker("Select Calendar", selection: $taskCalendar) {
                                                 ForEach(dailyTaskData.dailyTasks.sorted(), id: \.self) { calendarName in
                                                     Text(calendarName)
-                                                    
                                                 }
                                             }
                                             .padding()
                                             .foregroundColor(Color.black)
                                             .onChange(of: taskCalendar) { calendarName in
-                                                taskCalendar = calendarName
+                                                let selectedTaskCalendar = calendarName
+                                                dailyTaskData.taskCalendar = selectedTaskCalendar
+                                                
                                                 filterTasks = self.filteredTaskInfos
-                                                dailyTaskData.selectedTaskCalendar = [calendarName]
-                                                print(selectedTaskCalendar)
+                                                
+                                                dailyTaskData.saveDailyTasks()
                                             }
                                         } label: {
                                             Image(systemName: "calendar")
@@ -171,35 +176,35 @@ struct DayView: View {
                             ForEach(filteredTaskInfos, id: \.task.eventIdentifier) { taskInfo in
                                 let timeDifference = Calendar.current.dateComponents([.hour], from: taskInfo.task.startDate, to: Date())
                                 let isBefore = timeDifference.hour ?? 0 > 2
-                                
+                                let dimValue = opacityDim
                                 ZStack {
-                                    let stackNr = (taskInfo.stackingNumber ?? 0) * 17
+                                    let stackNr = (taskInfo.index ?? 0) * 17
                                     if let timeToPrint = userWantToPrintTime(taskInfo) {
-                                        let yPos = timeToPixel(time: taskInfo.task.startDate) + CGFloat(stackNr) + 9
+                                        let yPos = timeToPixel(time: taskInfo.task.startDate) + CGFloat(stackNr)
                                         Text("\(timeToPrint) - \(taskInfo.task.title)")
                                             .textCase(.uppercase)
-                                            .foregroundColor(isBefore ? Color.secondary.opacity(0.4) : Color.secondary.opacity(1))
-                                            .font(Font.caption)
+                                            .foregroundColor(isBefore ? Color.secondary.opacity(dimValue) : Color.secondary.opacity(1))
+                                            .font(Font.footnote)
                                             .frame(maxWidth: .infinity, alignment: .leading)
-                                            .position(x: 0, y: yPos * 0.915) // This is to compensate text height offset
-                                            .padding(0)
+                                            .position(x: 0, y: yPos)
+                                            .padding(.leading, 10)
                                     } else {
-                                        let yPos = timeToPixel(time: taskInfo.task.startDate) + CGFloat(stackNr) + 9
+                                        let yPos = timeToPixel(time: taskInfo.task.startDate) + CGFloat(stackNr)
                                         Text("\(taskInfo.task.title)")
                                             .textCase(.uppercase)
-                                            .foregroundColor(isBefore ? Color.secondary.opacity(0.4) : Color.secondary.opacity(1))
+                                            .foregroundColor(isBefore ? Color.secondary.opacity(dimValue) : Color.secondary.opacity(1))
                                             .font(Font.caption)
                                             .frame(maxWidth: .infinity, alignment: .leading)
-                                            .position(x: 0, y: yPos * 0.915) // This is to compensate text height offset
-                                            .padding(0)
+                                            .position(x: 0, y: yPos)
+                                            .padding(.leading, 10)
                                     }
                                 }
-                                .padding(EdgeInsets(top: 0, leading: 60, bottom: 0, trailing: 0))
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                             }
                             .frame(maxWidth: .infinity, maxHeight: slideOverHeight, alignment: .topLeading)
-                            .offset(x: 60, y: 10)
+                            .offset(x: 220, y: 8)
                         }
-                        .frame(maxWidth: geometry.size.width * 0.8, maxHeight: slideOverHeight, alignment: .topLeading)
+                        .frame(maxWidth: .infinity, maxHeight: slideOverHeight, alignment: .topLeading)
                     }
                     .frame(maxWidth: .infinity, maxHeight: slideOverHeight, alignment: .topLeading)
                     .onAppear {
@@ -213,9 +218,9 @@ struct DayView: View {
                     }
                     .background(
                         LinearGradient(
-                            gradient: Gradient(colors: [Color(UIColor.systemBlue).opacity(0.6), Color(UIColor.systemBackground).opacity(0)]),
-                            startPoint: UnitPoint(x: 0.5, y: (currentTimePosition / slideOverHeight) * 0.8),
-                            endPoint: UnitPoint(x: 0.5, y: (currentTimePosition / slideOverHeight) * 1.2)
+                            gradient: Gradient(colors: [Color(UIColor.systemBlue).opacity(0.4), Color(UIColor.systemBackground).opacity(0)]),
+                            startPoint: UnitPoint(x: 0.5, y: (currentTimePosition / slideOverHeight) * 0.6),
+                            endPoint: UnitPoint(x: 0.5, y: (currentTimePosition / slideOverHeight) * 0.9)
                         )
                         .offset(y: 20)
                         .clipShape(RoundedRectangle(cornerRadius: 10))

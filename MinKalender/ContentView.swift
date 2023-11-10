@@ -30,36 +30,36 @@ struct WeekdayHeaderView: View {
                 }
                 Spacer()
                 
-            Button(action: {
-                isDayOpen.toggle()
-            }) {
-                Image(systemName: "clock")
-                    .font(.headline)
-                    .foregroundColor(.blue)
-                    .padding(.horizontal, 10)
-            }
-        } // HStack
-        .frame(maxWidth: .infinity)
-        
-        ZStack {
-            HStack {
-                ForEach(weekdays, id: \.self) { weekday in
-                    Text(weekday)
+                Button(action: {
+                    isDayOpen.toggle()
+                }) {
+                    Image(systemName: "clock")
                         .font(.headline)
-                        .textCase(.uppercase)
-                        //.padding(.horizontal, 5)
-                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.blue)
+                        .padding(.horizontal, 10)
                 }
+            } // HStack
+            .frame(maxWidth: .infinity)
+            
+            ZStack {
+                HStack {
+                    ForEach(weekdays, id: \.self) { weekday in
+                        Text(weekday)
+                            .font(.headline)
+                            .textCase(.uppercase)
+                        //.padding(.horizontal, 5)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.clear)
+                .foregroundColor(Color(UIColor.systemGray))
+                .padding()
             }
             .frame(maxWidth: .infinity)
+            .padding(0)
             .background(Color.clear)
-            .foregroundColor(Color(UIColor.systemGray))
-            .padding()
         }
-        .frame(maxWidth: .infinity)
-        .padding(0)
-        .background(Color.clear)
-    }
     }
 }
 
@@ -78,38 +78,39 @@ class EventStoreHelper {
 }
 
 class DailyTaskData: ObservableObject {
-    @Published var selectedTaskCalendar: [String] {
-        didSet {
-            saveDailyTasks()
+
+    @Published var dailyTasks: Set<String>
+    @Published var taskCalendar: String {
+            didSet {
+                objectWillChange.send()
+                saveDailyTasks()
+            }
         }
-    }
-    @Published var dailyTasks: Set<String> {
-        didSet {
-            saveDailyTasks()
-        }
-    }
     
     init() {
-         self.selectedTaskCalendar = ["Hem"] // Cant empty this one all the time...
-       // self.dailyTasks = Set([])
-
-        if let taskCalendarFromUserDefaults = UserDefaults.standard.stringArray(forKey: "selectedTaskCalendar") {
-            self.selectedTaskCalendar = taskCalendarFromUserDefaults
+        self.taskCalendar = "Hem"
+        
+        if let taskCalendarFromUserDefaults = UserDefaults.standard.stringArray(forKey: "taskCalendar") {
+            taskCalendar = taskCalendarFromUserDefaults.first ?? "Hem"
+            print("taskCalendarFromUserDefaults: ", taskCalendarFromUserDefaults)
         } else {
             let tasksForDate = MyTasks.fetchTasksForDate()
             let calendarNames = tasksForDate.map { $0.calendarName }
-            self.selectedTaskCalendar = calendarNames
+            print("501")
+            taskCalendar = calendarNames.first ?? "Hem"
         }
-
+        
         self.dailyTasks = Set(EventStoreHelper.getAllCalendars())
     }
-
-
-    private func saveDailyTasks() {
-        print("save")
+    
+    func saveDailyTasks() {
+         print("save taskCalendar: ", taskCalendar)
         let taskArray = Array(dailyTasks)
+        let taskCalendarSave = self.taskCalendar
         UserDefaults.standard.set(taskArray, forKey: "dailyTasks")
-        UserDefaults.standard.set(selectedTaskCalendar, forKey: "selectedTaskCalendar")
+        UserDefaults.standard.set(taskCalendarSave, forKey: "taskCalendar")
+        let dataChecking = UserDefaults.standard.stringArray(forKey: "taskCalendar")
+        print("dataChecking: ", dataChecking as Any)
     }
 }
 
@@ -226,8 +227,9 @@ struct ContentView: View {
     @State var appSettings = AppSettings()
     @Binding var dailyTasks: Set<String>
     @ObservedObject var dailyTaskData = DailyTaskData()
-    @State var taskCalendar: String
+    
     @Binding var hideSettingsIcons: Bool
+    // @ObservedObject var selectedTaskCalendar: [String]
     
     let calendar = Calendar.current
     
@@ -285,7 +287,7 @@ struct ContentView: View {
                     
                     
                     //  DayView()
-                    DayView(dailyTaskData: dailyTaskData, dailyTasks: $dailyTaskData.dailyTasks, tasksForDay: $tasksForDay, userWantToPrintTime: appSettings.$userWantToPrintTime, hideSettingsIcons: appSettings.$hideSettingsIcons, taskCalendar: $taskCalendar, selectedTaskCalendar: $dailyTaskData.selectedTaskCalendar)
+                    DayView(dailyTaskData: dailyTaskData, dailyTasks: $dailyTaskData.dailyTasks, taskCalendar: $dailyTaskData.taskCalendar, tasksForDay: $tasksForDay, userWantToPrintTime: appSettings.$userWantToPrintTime, hideSettingsIcons: appSettings.$hideSettingsIcons, opacityDim: appSettings.$opacityDim)
                         .frame(width: geometry.size.width / 4)
                         .background(Color(UIColor.systemBackground))
                         .cornerRadius(10)

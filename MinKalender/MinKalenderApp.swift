@@ -36,7 +36,7 @@ struct MinKalenderApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(eventsForDay: $eventsForDay, tasksForDay: $tasksForDay, selectedCalendars: $calendarData.selectedCalendars, appSettings: AppSettings(), dailyTasks: $dailyTaskData.dailyTasks, taskCalendar: "", hideSettingsIcons: $hideSettingsIcons)
+            ContentView(eventsForDay: $eventsForDay, tasksForDay: $tasksForDay, selectedCalendars: $calendarData.selectedCalendars, appSettings: AppSettings(), dailyTasks: $dailyTaskData.dailyTasks, hideSettingsIcons: $hideSettingsIcons)
                 .environment(\.font, Font.custom("KohinoorTelugu-Light", size: 10))
                 .onAppear {
                     Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { timer in
